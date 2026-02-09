@@ -34,6 +34,7 @@ export default function BoardPage() {
   const [board, setBoard] = useState<BoardWithBingo | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBingoModal, setShowBingoModal] = useState(false);
+  const [bingoCount, setBingoCount] = useState(0);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
   const prevBingo = useRef(false);
   const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
@@ -143,7 +144,7 @@ export default function BoardPage() {
       // Check if bingo just happened
       if (updated.hasBingo && !prevBingo.current) {
         prevBingo.current = true;
-        haptic.bingo();
+        setBingoCount((c) => c + 1);
         setShowBingoModal(true);
       }
     } catch {
@@ -166,7 +167,10 @@ export default function BoardPage() {
 
       <main className="mx-auto max-w-5xl p-4">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-center">
-          <div className="mx-auto w-full flex-shrink-0 md:mx-0 md:w-auto" style={{ maxWidth: "var(--board-size)" }}>
+          <div
+            className="mx-auto w-full flex-shrink-0 md:mx-0 md:w-auto"
+            style={{ maxWidth: "var(--board-size)" }}
+          >
             <BingoBoard
               cells={board.cells}
               marked={board.marked}
@@ -190,7 +194,9 @@ export default function BoardPage() {
         </div>
       </main>
 
-      {showBingoModal && <BingoModal onClose={() => setShowBingoModal(false)} />}
+      {showBingoModal && (
+        <BingoModal bingoCount={bingoCount} onClose={() => setShowBingoModal(false)} />
+      )}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
