@@ -4,6 +4,7 @@ const tables = [roundsTable, wordsTable, playersTable, boardsTable];
 
 export const roundsApi = new sst.aws.Function("RoundsApi", {
   url: {
+    authorization: "none",
     cors: {
       allowOrigins: ["*"],
       allowMethods: ["GET", "POST", "PUT", "DELETE"],
@@ -16,6 +17,7 @@ export const roundsApi = new sst.aws.Function("RoundsApi", {
 
 export const wordsApi = new sst.aws.Function("WordsApi", {
   url: {
+    authorization: "none",
     cors: {
       allowOrigins: ["*"],
       allowMethods: ["GET", "POST", "PUT", "DELETE"],
@@ -28,6 +30,7 @@ export const wordsApi = new sst.aws.Function("WordsApi", {
 
 export const playersApi = new sst.aws.Function("PlayersApi", {
   url: {
+    authorization: "none",
     cors: {
       allowOrigins: ["*"],
       allowMethods: ["GET", "POST", "PUT", "DELETE"],
@@ -40,6 +43,7 @@ export const playersApi = new sst.aws.Function("PlayersApi", {
 
 export const boardsApi = new sst.aws.Function("BoardsApi", {
   url: {
+    authorization: "none",
     cors: {
       allowOrigins: ["*"],
       allowMethods: ["GET", "POST", "PUT", "DELETE"],
