@@ -1,7 +1,7 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 
 const YOUTUBE_VIDEO_ID = "v1-W54M8FVc";
@@ -30,10 +30,6 @@ function getCelebrationSubtext(count: number): string {
   return "The game continues — more bingos mean higher ranking!";
 }
 
-function getAutoDismissMs(count: number): number {
-  return count === 1 ? 8000 : 4000;
-}
-
 function getConfettiDuration(count: number): number {
   if (count === 1) return 3000;
   if (count === 2) return 1000;
@@ -56,13 +52,7 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
-  const autoDismissTimer = useRef<ReturnType<typeof setTimeout>>();
   const isFirstBingo = bingoCount === 1;
-
-  const handleClose = useCallback(() => {
-    if (autoDismissTimer.current) clearTimeout(autoDismissTimer.current);
-    onClose();
-  }, [onClose]);
 
   // Confetti + haptic
   useEffect(() => {
@@ -100,13 +90,18 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Auto-dismiss
+  // ESC key dismiss
   useEffect(() => {
-    autoDismissTimer.current = setTimeout(handleClose, getAutoDismissMs(bingoCount));
-    return () => {
-      if (autoDismissTimer.current) clearTimeout(autoDismissTimer.current);
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
     };
-  }, [bingoCount, handleClose]);
+    document.addEventListener("keydown", handleEsc);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
 
   // YouTube load timeout fallback
   useEffect(() => {
@@ -120,17 +115,21 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") handleClose();
-      }}
       role="dialog"
       aria-modal="true"
       aria-label="Bingo celebration"
     >
-      <div className="w-full max-w-[500px] text-center">
+      <div className="relative w-full max-w-[500px] text-center">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute -top-2 -right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
+          aria-label="Close celebration"
+        >
+          ✕
+        </button>
+
         {/* Celebration text with scale-in animation */}
         <h2
           className={`mb-2 text-4xl font-bold text-white drop-shadow-lg transition-all duration-400 ${
@@ -171,7 +170,7 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
         )}
 
         <Button
-          onClick={handleClose}
+          onClick={onClose}
           variant="secondary"
           className="w-full max-w-xs border-white/20 bg-white/10 text-white hover:bg-white/20"
         >

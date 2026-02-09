@@ -194,6 +194,19 @@ export default function BoardPage() {
         </div>
       </main>
 
+      {/* Celebration replay button */}
+      {bingoCount > 0 && !showBingoModal && (
+        <button
+          type="button"
+          onClick={() => setShowBingoModal(true)}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-corpo-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+          aria-label="Replay celebration"
+        >
+          <span>🎉</span>
+          <span>Celebrate!</span>
+        </button>
+      )}
+
       {showBingoModal && (
         <BingoModal bingoCount={bingoCount} onClose={() => setShowBingoModal(false)} />
       )}
