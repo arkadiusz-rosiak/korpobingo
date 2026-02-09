@@ -137,25 +137,29 @@ export default function BoardPage() {
     <div className="min-h-screen pb-8">
       <Header shareCode={code} roundName={round?.name} />
 
-      <main className="mx-auto max-w-2xl space-y-6 p-4">
-        <BingoBoard
-          cells={board.cells}
-          marked={board.marked}
-          size={board.size}
-          bingoLines={board.bingoLines}
-          onToggleCell={handleToggleCell}
-        />
+      <main className="mx-auto max-w-5xl p-4">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-center">
+          <div className="mx-auto w-full flex-shrink-0 md:mx-0 md:w-auto" style={{ maxWidth: "var(--board-size)" }}>
+            <BingoBoard
+              cells={board.cells}
+              marked={board.marked}
+              size={board.size}
+              bingoLines={board.bingoLines}
+              onToggleCell={handleToggleCell}
+            />
+          </div>
 
-        <div>
-          {progressError && (
-            <p className="mb-2 text-xs text-orange-500">Connection lost — retrying...</p>
-          )}
-          <PlayerList
-            players={playerProgress}
-            shareCode={code}
-            currentPlayer={playerName}
-            showBoards
-          />
+          <div className="w-full md:min-w-[240px] md:max-w-xs">
+            {progressError && (
+              <p className="mb-2 text-xs text-orange-500">Connection lost — retrying...</p>
+            )}
+            <PlayerList
+              players={playerProgress}
+              shareCode={code}
+              currentPlayer={playerName}
+              showBoards
+            />
+          </div>
         </div>
       </main>
 
