@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui";
 
 interface WordInputProps {
   existingWords: string[];
@@ -43,15 +44,20 @@ export default function WordInput({ existingWords, onSubmit, disabled = false }:
           placeholder="Add a buzzword..."
           maxLength={100}
           disabled={disabled || submitting}
-          className={`input-field flex-1 ${isDuplicate ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""}`}
+          className={`w-full rounded-lg border px-4 py-3 text-gray-900 transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-2 ${
+            isDuplicate
+              ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+              : "border-gray-300 focus:border-corpo-500 focus:ring-corpo-500/20"
+          }`}
         />
-        <button
+        <Button
           type="submit"
-          disabled={!trimmed || isDuplicate || submitting || disabled}
-          className="btn-primary whitespace-nowrap"
+          size="md"
+          disabled={!trimmed || isDuplicate || disabled}
+          loading={submitting}
         >
-          {submitting ? "..." : "Add"}
-        </button>
+          Add
+        </Button>
       </div>
       {isDuplicate && <p className="text-xs text-red-500">This word already exists</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}

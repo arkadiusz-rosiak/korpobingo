@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ApiRequestError, players, rounds } from "@/lib/api";
 import { getSession, setPinForSession, setSession } from "@/lib/session";
+import { Button, Input } from "@/components/ui";
 
 export default function JoinPage() {
   const params = useParams();
@@ -17,7 +18,6 @@ export default function JoinPage() {
   const [roundExists, setRoundExists] = useState<boolean | null>(null);
   const [roundId, setRoundId] = useState("");
 
-  // Check session — if already joined, redirect
   useEffect(() => {
     const session = getSession(code);
     if (session) {
@@ -25,7 +25,6 @@ export default function JoinPage() {
     }
   }, [code, router]);
 
-  // Check round exists
   useEffect(() => {
     rounds
       .getByShareCode(code)
@@ -49,7 +48,6 @@ export default function JoinPage() {
       router.push(`/round/${code}`);
     } catch (err) {
       if (err instanceof ApiRequestError && err.message.includes("already exists")) {
-        // Player exists — try verifying PIN to rejoin
         try {
           await players.verify(roundId, name.trim(), pin);
           setSession(code, name.trim());
@@ -79,9 +77,9 @@ export default function JoinPage() {
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
         <p className="text-lg font-medium text-red-500">Round not found</p>
         <p className="text-sm text-gray-400">Check the code and try again.</p>
-        <button type="button" onClick={() => router.push("/")} className="btn-secondary">
+        <Button variant="secondary" onClick={() => router.push("/")}>
           Go home
-        </button>
+        </Button>
       </main>
     );
   }
@@ -97,23 +95,16 @@ export default function JoinPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
-              Your name
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="How should we call you?"
-              maxLength={30}
-              className="input-field"
-            />
-          </div>
+          <Input
+            label="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="How should we call you?"
+            maxLength={30}
+          />
 
           <div>
-            <label htmlFor="pin" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="pin" className="mb-1 block text-sm font-medium text-gray-700">
               4-digit PIN
             </label>
             <input
@@ -128,20 +119,21 @@ export default function JoinPage() {
               }}
               placeholder="Your secret PIN"
               maxLength={4}
-              className="input-field text-center font-mono text-xl tracking-[0.5em]"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-center font-mono text-xl tracking-[0.5em] text-gray-900 transition-colors placeholder:text-gray-400 focus:border-corpo-500 focus:outline-none focus:ring-2 focus:ring-corpo-500/20"
             />
             <p className="mt-1 text-xs text-gray-400">Use this PIN to rejoin from another device</p>
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <button
+          <Button
             type="submit"
-            disabled={!name.trim() || pin.length !== 4 || loading}
-            className="btn-primary w-full"
+            disabled={!name.trim() || pin.length !== 4}
+            loading={loading}
+            className="w-full"
           >
-            {loading ? "Joining..." : "Join"}
-          </button>
+            Join
+          </Button>
         </form>
       </div>
     </main>
