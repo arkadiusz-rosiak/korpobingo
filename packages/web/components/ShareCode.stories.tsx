@@ -18,8 +18,43 @@ export const Default: Story = {
   },
 };
 
+export const TypicalCode: Story = {
+  args: {
+    code: "HX7K9W",
+  },
+};
+
 export const ShortCode: Story = {
   args: {
     code: "XY7",
   },
+};
+
+export const InCard: Story = {
+  args: {
+    code: "MEET42",
+  },
+  decorators: [
+    (Story) => (
+      <div className="w-[480px] rounded-xl bg-white p-8 shadow-lg">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const NarrowMobile: Story = {
+  args: {
+    code: "HX7K9W",
+  },
+  parameters: {
+    viewport: { defaultViewport: "mobile1" },
+  },
+  decorators: [
+    (Story) => (
+      <div className="w-[320px]">
+        <Story />
+      </div>
+    ),
+  ],
 };
