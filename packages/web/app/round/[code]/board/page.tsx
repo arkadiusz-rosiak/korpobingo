@@ -32,8 +32,9 @@ export default function BoardPage() {
   const [board, setBoard] = useState<BoardWithBingo | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBingoModal, setShowBingoModal] = useState(false);
+  const [bingoCount, setBingoCount] = useState(0);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
-  const prevBingo = useRef(false);
+  const prevBingoLineCount = useRef(0);
 
   // Redirect if no session
   useEffect(() => {
@@ -60,7 +61,8 @@ export default function BoardPage() {
         try {
           const b = await boards.get(r.roundId, playerName);
           setBoard(b);
-          prevBingo.current = b.hasBingo;
+          prevBingoLineCount.current = b.bingoLines.length;
+          if (b.hasBingo) setBingoCount(b.bingoLines.length);
         } catch {
           // Board doesn't exist — create it
           const newBoard = await boards.create(r.roundId, playerName, pin);
@@ -134,9 +136,11 @@ export default function BoardPage() {
       const updated = await boards.mark(round.roundId, playerName, index, pin);
       setBoard(updated);
 
-      // Check if bingo just happened
-      if (updated.hasBingo && !prevBingo.current) {
-        prevBingo.current = true;
+      // Check if a new bingo line was achieved
+      if (updated.bingoLines.length > prevBingoLineCount.current) {
+        const newCount = updated.bingoLines.length;
+        prevBingoLineCount.current = newCount;
+        setBingoCount(newCount);
         haptic.bingo();
         setShowBingoModal(true);
       }
@@ -184,7 +188,12 @@ export default function BoardPage() {
         </div>
       </main>
 
-      {showBingoModal && <BingoModal onClose={() => setShowBingoModal(false)} />}
+      {showBingoModal && (
+        <BingoModal
+          bingoCount={bingoCount}
+          onClose={() => setShowBingoModal(false)}
+        />
+      )}
     </div>
   );
 }
