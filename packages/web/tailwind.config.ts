@@ -23,6 +23,7 @@ const config: Config = {
         unmark: "unmark 0.2s ease-in",
         "fade-in": "fadeIn 0.2s ease-out",
         "bingo-glow": "bingoGlow 1.5s ease-in-out infinite",
+        "crown-shimmer": "crownShimmer 2s ease-in-out infinite",
       },
       keyframes: {
         stamp: {
@@ -41,6 +42,10 @@ const config: Config = {
         bingoGlow: {
           "0%, 100%": { boxShadow: "0 0 4px 1px rgba(255, 215, 0, 0.3)" },
           "50%": { boxShadow: "0 0 12px 4px rgba(255, 215, 0, 0.6)" },
+        },
+        crownShimmer: {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.15)", opacity: "0.85" },
         },
       },
     },
