@@ -17,6 +17,6 @@
     "vitest": "^2"
   },
   "scripts": {
-    "test": "sst shell vitest"
+    "test": "vitest run"
   }
 }
