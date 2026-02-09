@@ -16,20 +16,63 @@ class ApiRequestError extends Error {
   }
 }
 
+const MAX_RETRIES = 4;
+const BASE_DELAY_MS = 1000;
+const MAX_DELAY_MS = 30000;
+
+function retryDelay(attempt: number): number {
+  const exponential = Math.min(BASE_DELAY_MS * 2 ** attempt, MAX_DELAY_MS);
+  const jitter = exponential * 0.5 * Math.random();
+  return exponential + jitter;
+}
+
+function isRetryable(status: number, method: string | undefined): boolean {
+  if (method && method !== "GET") return false;
+  return status === 408 || status === 429 || status >= 500;
+}
+
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  let lastError: unknown;
 
-  const data = await res.json();
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
 
-  if (!res.ok) {
-    const err = data as ApiError;
-    throw new ApiRequestError(err.error || "Request failed", err.code || "UNKNOWN", res.status);
+      const data = await res.json();
+
+      if (!res.ok) {
+        const err = data as ApiError;
+        const apiErr = new ApiRequestError(
+          err.error || "Request failed",
+          err.code || "UNKNOWN",
+          res.status,
+        );
+
+        if (attempt < MAX_RETRIES && isRetryable(res.status, options?.method)) {
+          lastError = apiErr;
+          await new Promise((r) => setTimeout(r, retryDelay(attempt)));
+          continue;
+        }
+
+        throw apiErr;
+      }
+
+      return data as T;
+    } catch (error) {
+      if (error instanceof ApiRequestError) throw error;
+
+      lastError = error;
+      if (attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, retryDelay(attempt)));
+        continue;
+      }
+    }
   }
 
-  return data as T;
+  throw lastError;
 }
 
 function qs(params: Record<string, string | undefined>): string {
