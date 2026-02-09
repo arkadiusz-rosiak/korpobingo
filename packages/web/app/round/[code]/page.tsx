@@ -65,7 +65,7 @@ export default function RoundPage() {
     [round],
   );
 
-  const { data: wordList } = usePolling<Word[]>(fetchWords, 5000, !!round);
+  const { data: wordList, refresh: refreshWords } = usePolling<Word[]>(fetchWords, 5000, !!round);
   const { data: playerList } = usePolling<Player[]>(fetchPlayers, 10000, !!round);
   const { data: freshRound } = usePolling<Round>(fetchRound, 10000, !!round);
 
@@ -87,6 +87,7 @@ export default function RoundPage() {
   const handleSubmitWord = async (text: string) => {
     if (!round || !pin) return;
     await wordsApi.submit(round.roundId, text, playerName, pin);
+    refreshWords();
     addToast("Word added!", "success");
   };
 
@@ -94,6 +95,7 @@ export default function RoundPage() {
     if (!round || !pin) return;
     try {
       await wordsApi.vote(round.roundId, wordId, playerName, pin);
+      refreshWords();
     } catch (err) {
       if (err instanceof Error && err.message.includes("Conflict")) {
         addToast("Already voted on this word");
