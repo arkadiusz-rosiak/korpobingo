@@ -63,9 +63,9 @@ export default function RoundPage() {
     [round],
   );
 
-  const { data: wordList } = usePolling<Word[]>(fetchWords, 3000, !!round);
-  const { data: playerList } = usePolling<Player[]>(fetchPlayers, 5000, !!round);
-  const { data: freshRound } = usePolling<Round>(fetchRound, 5000, !!round);
+  const { data: wordList } = usePolling<Word[]>(fetchWords, 5000, !!round);
+  const { data: playerList } = usePolling<Player[]>(fetchPlayers, 10000, !!round);
+  const { data: freshRound } = usePolling<Round>(fetchRound, 10000, !!round);
 
   // Update round status from polling
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function RoundPage() {
   const handleStartGame = async () => {
     if (!round || !pin) return;
     try {
-      await rounds.updateStatus(round.roundId, "playing", pin);
+      await rounds.updateStatus(round.roundId, "playing", playerName, pin);
       router.push(`/round/${code}/board`);
     } catch (err) {
       setToast(err instanceof Error ? err.message : "Failed to start");

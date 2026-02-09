@@ -19,10 +19,7 @@ export default $config({
       WordsTable: storage.wordsTable.name,
       PlayersTable: storage.playersTable.name,
       BoardsTable: storage.boardsTable.name,
-      RoundsApiUrl: api.roundsApi.url,
-      WordsApiUrl: api.wordsApi.url,
-      PlayersApiUrl: api.playersApi.url,
-      BoardsApiUrl: api.boardsApi.url,
+      ApiUrl: api.api.url,
       WebUrl: web.url,
     };
   },

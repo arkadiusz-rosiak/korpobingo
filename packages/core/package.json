@@ -3,10 +3,11 @@
   "type": "module",
   "version": "0.0.0",
   "exports": {
-    "./*": [
-      "./src/*/index.ts",
-      "./src/*.ts"
-    ]
+    "./board": "./src/board.ts",
+    "./dynamo": "./src/dynamo.ts",
+    "./player": "./src/player.ts",
+    "./round": "./src/round.ts",
+    "./word": "./src/word.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3",

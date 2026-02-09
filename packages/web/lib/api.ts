@@ -53,10 +53,10 @@ export const rounds = {
 
   get: (roundId: string) => request<import("./types").Round>(`${ROUNDS_API}${qs({ roundId })}`),
 
-  updateStatus: (roundId: string, status: string, pin: string) =>
+  updateStatus: (roundId: string, status: string, playerName: string, pin: string) =>
     request<{ ok: boolean }>(`${ROUNDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ action: "updateStatus", roundId, status, pin }),
+      body: JSON.stringify({ action: "updateStatus", roundId, status, playerName, pin }),
     }),
 };
 
