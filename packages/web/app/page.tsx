@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui";
 
 export default function Home() {
   const router = useRouter();
@@ -29,13 +30,9 @@ export default function Home() {
         </div>
 
         <div className="space-y-4">
-          <button
-            type="button"
-            onClick={() => router.push("/create")}
-            className="btn-primary w-full"
-          >
+          <Button onClick={() => router.push("/create")} className="w-full">
             Create a round
-          </button>
+          </Button>
 
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-gray-200" />
@@ -53,11 +50,15 @@ export default function Home() {
               }}
               placeholder="ENTER CODE"
               maxLength={6}
-              className="input-field flex-1 text-center font-mono text-lg tracking-[0.2em]"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-center font-mono text-lg tracking-[0.2em] text-gray-900 transition-colors placeholder:text-gray-400 focus:border-corpo-500 focus:outline-none focus:ring-2 focus:ring-corpo-500/20"
             />
-            <button type="submit" disabled={code.trim().length !== 6} className="btn-secondary">
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={code.trim().length !== 6}
+            >
               Join
-            </button>
+            </Button>
           </form>
           {error && <p className="text-xs text-red-500">{error}</p>}
         </div>

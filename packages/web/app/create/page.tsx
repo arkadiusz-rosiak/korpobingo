@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { rounds } from "@/lib/api";
+import { Button, Input } from "@/components/ui";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -33,20 +34,14 @@ export default function CreatePage() {
         <h1 className="mb-8 text-center text-2xl font-bold">New Round</h1>
 
         <form onSubmit={handleCreate} className="space-y-6">
-          <div>
-            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
-              Meeting name
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder='e.g., "Q4 Strategy Sync"'
-              maxLength={100}
-              className="input-field"
-            />
-          </div>
+          <Input
+            label="Meeting name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder='e.g., "Q4 Strategy Sync"'
+            maxLength={100}
+            error={error || undefined}
+          />
 
           <div>
             <span className="mb-1.5 block text-sm font-medium text-gray-700">Board size</span>
@@ -69,11 +64,9 @@ export default function CreatePage() {
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
-          <button type="submit" disabled={!name.trim() || loading} className="btn-primary w-full">
-            {loading ? "Creating..." : "Create round"}
-          </button>
+          <Button type="submit" disabled={!name.trim()} loading={loading} className="w-full">
+            Create round
+          </Button>
         </form>
       </div>
     </main>
