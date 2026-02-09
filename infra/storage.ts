@@ -1,8 +1,12 @@
 export const roundsTable = new sst.aws.Dynamo("Rounds", {
   fields: {
     roundId: "string",
+    shareCode: "string",
   },
   primaryIndex: { hashKey: "roundId" },
+  globalIndexes: {
+    byShareCode: { hashKey: "shareCode" },
+  },
 });
 
 export const wordsTable = new sst.aws.Dynamo("Words", {

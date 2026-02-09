@@ -22,7 +22,7 @@ export const handler: Handler = async (event) => {
           roundId: body.roundId,
           playerName: body.playerName,
           words: wordTexts,
-          size: body.size ?? 5,
+          size: body.size ?? 4,
         });
         return json(201, board);
       }

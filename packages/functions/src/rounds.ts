@@ -9,15 +9,26 @@ export const handler: Handler = async (event) => {
   try {
     switch (method) {
       case "POST": {
+        if (body.action === "updateStatus") {
+          await Round.updateStatus(body.roundId, body.status);
+          return json(200, { ok: true });
+        }
         const round = await Round.create({
           roundId: crypto.randomUUID(),
           name: body.name,
           boardSize: body.boardSize,
+          durationDays: body.durationDays,
         });
         return json(201, round);
       }
       case "GET": {
         const roundId = getParam(event, "roundId");
+        const shareCode = getParam(event, "shareCode");
+        if (shareCode) {
+          const round = await Round.getByShareCode(shareCode);
+          if (!round) return json(404, { error: "Runda nie znaleziona" });
+          return json(200, round);
+        }
         if (roundId) {
           const round = await Round.get(roundId);
           if (!round) return json(404, { error: "Runda nie znaleziona" });
@@ -48,7 +59,10 @@ function getParam(event: any, name: string): string | undefined {
 function json(statusCode: number, body: unknown) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
     body: JSON.stringify(body),
   };
 }
