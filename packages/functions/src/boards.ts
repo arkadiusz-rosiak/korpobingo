@@ -1,58 +1,77 @@
-import { Handler } from "aws-lambda";
 import { Board } from "@korpobingo/core/board";
+import { Player } from "@korpobingo/core/player";
+import { Round } from "@korpobingo/core/round";
 import { Word } from "@korpobingo/core/word";
+import { getMethod, json, parseBody, requireParam, wrapHandler } from "./middleware.js";
 
-export const handler: Handler = async (event) => {
-  const method = event.requestContext?.http?.method ?? event.httpMethod;
-  const body = event.body ? JSON.parse(event.body) : {};
+export const handler = wrapHandler(async (event) => {
+  const method = getMethod(event);
 
-  try {
-    switch (method) {
-      case "POST": {
-        if (body.action === "mark") {
-          await Board.markCell(body.roundId, body.playerName, body.cellIndex);
-          const board = await Board.get(body.roundId, body.playerName);
-          if (!board) return json(404, { error: "Plansza nie znaleziona" });
-          const hasBingo = Board.checkBingo(board.marked, board.size);
-          return json(200, { ...board, hasBingo });
+  switch (method) {
+    case "POST": {
+      const body = parseBody(event);
+
+      if (body.action === "mark") {
+        const roundId = body.roundId as string;
+        const playerName = body.playerName as string;
+        const cellIndex = body.cellIndex as number;
+        const pin = body.pin as string;
+        if (!roundId || !playerName || cellIndex === undefined || !pin) {
+          return json(400, {
+            error: "roundId, playerName, cellIndex, and pin are required",
+            code: "VALIDATION_ERROR",
+          });
         }
-        const words = await Word.listByVotes(body.roundId);
-        const wordTexts = words.map((w) => w.text);
-        const board = await Board.create({
-          roundId: body.roundId,
-          playerName: body.playerName,
-          words: wordTexts,
-          size: body.size ?? 4,
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+        }
+        const board = await Board.markCell(roundId, playerName, cellIndex);
+        const bingo = Board.checkBingo(board.marked, board.size);
+        return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
+      }
+
+      // Create board from top-voted words
+      const roundId = body.roundId as string;
+      const playerName = body.playerName as string;
+      const pin = body.pin as string;
+      if (!roundId || !playerName || !pin) {
+        return json(400, {
+          error: "roundId, playerName, and pin are required",
+          code: "VALIDATION_ERROR",
         });
-        return json(201, board);
       }
-      case "GET": {
-        const roundId = getParam(event, "roundId");
-        const playerName = getParam(event, "playerName");
-        if (!roundId || !playerName)
-          return json(400, { error: "Brak roundId lub playerName" });
-        const board = await Board.get(roundId, playerName);
-        if (!board) return json(404, { error: "Plansza nie znaleziona" });
-        const hasBingo = Board.checkBingo(board.marked, board.size);
-        return json(200, { ...board, hasBingo });
+
+      const pinValid = await Player.verifyPin(roundId, playerName, pin);
+      if (!pinValid) {
+        return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
       }
-      default:
-        return json(405, { error: "Niedozwolona metoda" });
+
+      const round = await Round.get(roundId);
+      if (!round) {
+        return json(404, { error: "Round not found", code: "NOT_FOUND" });
+      }
+
+      const words = await Word.listByVotes(roundId);
+      const wordTexts = words.map((w) => w.text);
+      const board = await Board.create({
+        roundId,
+        playerName,
+        words: wordTexts,
+        size: round.boardSize,
+      });
+      const bingo = Board.checkBingo(board.marked, board.size);
+      return json(201, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
     }
-  } catch (err) {
-    console.error(err);
-    return json(500, { error: "Błąd serwera" });
+    case "GET": {
+      const roundId = requireParam(event, "roundId");
+      const playerName = requireParam(event, "playerName");
+      const board = await Board.get(roundId, playerName);
+      if (!board) return json(404, { error: "Board not found", code: "NOT_FOUND" });
+      const bingo = Board.checkBingo(board.marked, board.size);
+      return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
+    }
+    default:
+      return json(405, { error: "Method not allowed", code: "METHOD_NOT_ALLOWED" });
   }
-};
-
-function getParam(event: any, name: string): string | undefined {
-  return event.queryStringParameters?.[name];
-}
-
-function json(statusCode: number, body: unknown) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
+});
