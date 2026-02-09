@@ -6,8 +6,10 @@ import BingoBoard from "@/components/BingoBoard";
 import BingoModal from "@/components/BingoModal";
 import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
+import ToastContainer from "@/components/ToastContainer";
 import { boards, players as playersApi, rounds } from "@/lib/api";
 import { useHaptic, usePolling } from "@/lib/hooks";
+import { useNotifications } from "@/lib/notifications";
 import { getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
 
@@ -32,8 +34,10 @@ export default function BoardPage() {
   const [board, setBoard] = useState<BoardWithBingo | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBingoModal, setShowBingoModal] = useState(false);
+  const [bingoCount, setBingoCount] = useState(0);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
   const prevBingo = useRef(false);
+  const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
   // Redirect if no session
   useEffect(() => {
@@ -50,6 +54,11 @@ export default function BoardPage() {
       try {
         const r = await rounds.getByShareCode(code);
         setRound(r);
+
+        if (r.status === "finished") {
+          router.push(`/round/${code}/results`);
+          return;
+        }
 
         // Try to get existing board or create one
         try {
@@ -70,6 +79,22 @@ export default function BoardPage() {
     };
     init();
   }, [code, playerName, pin, router]);
+
+  // Poll round status and redirect to results when finished
+  const fetchRound = useCallback(
+    () => (round ? rounds.get(round.roundId) : Promise.reject()),
+    [round],
+  );
+  const { data: freshRound } = usePolling<Round>(fetchRound, 10000, !!round);
+
+  useEffect(() => {
+    if (freshRound) {
+      setRound(freshRound);
+      if (freshRound.status === "finished") {
+        router.push(`/round/${code}/results`);
+      }
+    }
+  }, [freshRound, code, router]);
 
   // Poll other players' progress
   const fetchProgress = useCallback(async (): Promise<PlayerProgress[]> => {
@@ -96,8 +121,11 @@ export default function BoardPage() {
   );
 
   useEffect(() => {
-    if (progress) setPlayerProgress(progress);
-  }, [progress]);
+    if (progress) {
+      setPlayerProgress(progress);
+      notifyPlayerChanges(progress);
+    }
+  }, [progress, notifyPlayerChanges]);
 
   const handleToggleCell = async (index: number) => {
     if (!round || !board || board.marked[index] || !pin) return;
@@ -116,7 +144,7 @@ export default function BoardPage() {
       // Check if bingo just happened
       if (updated.hasBingo && !prevBingo.current) {
         prevBingo.current = true;
-        haptic.bingo();
+        setBingoCount((c) => c + 1);
         setShowBingoModal(true);
       }
     } catch {
@@ -139,7 +167,10 @@ export default function BoardPage() {
 
       <main className="mx-auto max-w-5xl p-4">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-center">
-          <div className="mx-auto w-full flex-shrink-0 md:mx-0 md:w-auto" style={{ maxWidth: "var(--board-size)" }}>
+          <div
+            className="mx-auto w-full flex-shrink-0 md:mx-0 md:w-auto"
+            style={{ maxWidth: "var(--board-size)" }}
+          >
             <BingoBoard
               cells={board.cells}
               marked={board.marked}
@@ -163,7 +194,10 @@ export default function BoardPage() {
         </div>
       </main>
 
-      {showBingoModal && <BingoModal onClose={() => setShowBingoModal(false)} />}
+      {showBingoModal && (
+        <BingoModal bingoCount={bingoCount} onClose={() => setShowBingoModal(false)} />
+      )}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
