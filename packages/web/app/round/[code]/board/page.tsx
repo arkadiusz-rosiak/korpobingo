@@ -6,8 +6,10 @@ import BingoBoard from "@/components/BingoBoard";
 import BingoModal from "@/components/BingoModal";
 import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
+import ToastContainer from "@/components/ToastContainer";
 import { boards, players as playersApi, rounds } from "@/lib/api";
 import { useHaptic, usePolling } from "@/lib/hooks";
+import { useNotifications } from "@/lib/notifications";
 import { getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
 
@@ -34,6 +36,7 @@ export default function BoardPage() {
   const [showBingoModal, setShowBingoModal] = useState(false);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
   const prevBingo = useRef(false);
+  const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
   // Redirect if no session
   useEffect(() => {
@@ -117,8 +120,11 @@ export default function BoardPage() {
   );
 
   useEffect(() => {
-    if (progress) setPlayerProgress(progress);
-  }, [progress]);
+    if (progress) {
+      setPlayerProgress(progress);
+      notifyPlayerChanges(progress);
+    }
+  }, [progress, notifyPlayerChanges]);
 
   const handleToggleCell = async (index: number) => {
     if (!round || !board || board.marked[index] || !pin) return;
@@ -185,6 +191,7 @@ export default function BoardPage() {
       </main>
 
       {showBingoModal && <BingoModal onClose={() => setShowBingoModal(false)} />}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
