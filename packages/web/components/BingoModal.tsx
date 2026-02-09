@@ -119,7 +119,7 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
       aria-modal="true"
       aria-label="Bingo celebration"
     >
-      <div className="relative w-full max-w-[500px] text-center">
+      <div className="relative w-full max-w-[500px] text-center md:max-w-[640px]">
         {/* Close button */}
         <button
           type="button"
@@ -146,7 +146,7 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
 
         {/* YouTube video — first bingo only */}
         {isFirstBingo && !videoFailed && (
-          <div className="relative mx-auto mb-4 aspect-video w-full max-w-[400px] overflow-hidden rounded-lg">
+          <div className="relative mx-auto mb-4 aspect-video w-full max-w-[400px] overflow-hidden rounded-lg md:max-w-[560px]">
             <iframe
               src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&mute=1&controls=1&rel=0`}
               title="Bingo celebration video"
