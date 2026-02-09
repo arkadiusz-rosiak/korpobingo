@@ -40,7 +40,7 @@ export default function BingoModal({ onClose }: BingoModalProps) {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-      <div className="animate-fade-in card max-w-sm text-center">
+      <div className="motion-safe:animate-fade-in card max-w-sm text-center">
         <h2 className="mb-2 text-3xl font-bold text-corpo-900">BINGO!</h2>
         <p className="mb-4 text-gray-600">Looks like someone said all the right buzzwords today.</p>
         <p className="mb-6 text-sm text-gray-400">
