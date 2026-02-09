@@ -10,6 +10,14 @@ export default $config({
     };
   },
   async run() {
+    $transform(aws.lambda.FunctionUrl, (args, opts, name) => {
+      new aws.lambda.Permission(`${name}InvokePermission`, {
+        action: "lambda:InvokeFunction",
+        function: args.functionName,
+        principal: "*",
+      });
+    });
+
     const storage = await import("./infra/storage");
     const api = await import("./infra/api");
     const { web } = await import("./infra/web");
