@@ -4,11 +4,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ShareCode from "@/components/ShareCode";
-import Toast from "@/components/Toast";
+import ToastContainer from "@/components/ToastContainer";
 import WordInput from "@/components/WordInput";
 import WordList from "@/components/WordList";
 import { players as playersApi, rounds, words as wordsApi } from "@/lib/api";
 import { usePolling } from "@/lib/hooks";
+import { useNotifications } from "@/lib/notifications";
 import { getPinForSession, getSession } from "@/lib/session";
 import type { Player, Round, Word } from "@/lib/types";
 
@@ -17,14 +18,15 @@ export default function RoundPage() {
   const router = useRouter();
   const code = (params.code as string).toUpperCase();
 
-  const [round, setRound] = useState<Round | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [toast, setToast] = useState<string | null>(null);
-
   const session = typeof window !== "undefined" ? getSession(code) : null;
   const playerName = session?.playerName ?? "";
   const pin = typeof window !== "undefined" ? getPinForSession(code) : null;
+
+  const [round, setRound] = useState<Round | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const { toasts, addToast, dismissToast, notifyPlayerChanges, notifyStatusChange } =
+    useNotifications(playerName);
 
   // Fetch round data
   useEffect(() => {
@@ -67,15 +69,25 @@ export default function RoundPage() {
   const { data: playerList } = usePolling<Player[]>(fetchPlayers, 10000, !!round);
   const { data: freshRound } = usePolling<Round>(fetchRound, 10000, !!round);
 
-  // Update round status from polling
+  // Update round status from polling and notify on changes
   useEffect(() => {
-    if (freshRound) setRound(freshRound);
-  }, [freshRound]);
+    if (freshRound) {
+      setRound(freshRound);
+      notifyStatusChange(freshRound.status);
+    }
+  }, [freshRound, notifyStatusChange]);
+
+  // Notify on player changes
+  useEffect(() => {
+    if (playerList) {
+      notifyPlayerChanges(playerList);
+    }
+  }, [playerList, notifyPlayerChanges]);
 
   const handleSubmitWord = async (text: string) => {
     if (!round || !pin) return;
     await wordsApi.submit(round.roundId, text, playerName, pin);
-    setToast("Word added!");
+    addToast("Word added!", "success");
   };
 
   const handleVote = async (wordId: string) => {
@@ -84,7 +96,7 @@ export default function RoundPage() {
       await wordsApi.vote(round.roundId, wordId, playerName, pin);
     } catch (err) {
       if (err instanceof Error && err.message.includes("Conflict")) {
-        setToast("Already voted on this word");
+        addToast("Already voted on this word");
       }
     }
   };
@@ -95,7 +107,7 @@ export default function RoundPage() {
       await rounds.updateStatus(round.roundId, "playing", playerName, pin);
       router.push(`/round/${code}/board`);
     } catch (err) {
-      setToast(err instanceof Error ? err.message : "Failed to start");
+      addToast(err instanceof Error ? err.message : "Failed to start", "error");
     }
   };
 
@@ -189,7 +201,7 @@ export default function RoundPage() {
         )}
       </main>
 
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
