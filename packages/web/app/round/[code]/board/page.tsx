@@ -51,6 +51,11 @@ export default function BoardPage() {
         const r = await rounds.getByShareCode(code);
         setRound(r);
 
+        if (r.status === "finished") {
+          router.push(`/round/${code}/results`);
+          return;
+        }
+
         // Try to get existing board or create one
         try {
           const b = await boards.get(r.roundId, playerName);
@@ -70,6 +75,22 @@ export default function BoardPage() {
     };
     init();
   }, [code, playerName, pin, router]);
+
+  // Poll round status and redirect to results when finished
+  const fetchRound = useCallback(
+    () => (round ? rounds.get(round.roundId) : Promise.reject()),
+    [round],
+  );
+  const { data: freshRound } = usePolling<Round>(fetchRound, 10000, !!round);
+
+  useEffect(() => {
+    if (freshRound) {
+      setRound(freshRound);
+      if (freshRound.status === "finished") {
+        router.push(`/round/${code}/results`);
+      }
+    }
+  }, [freshRound, code, router]);
 
   // Poll other players' progress
   const fetchProgress = useCallback(async (): Promise<PlayerProgress[]> => {
