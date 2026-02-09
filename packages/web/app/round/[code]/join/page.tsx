@@ -2,9 +2,9 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button, Input, PinInput } from "@/components/ui";
 import { ApiRequestError, players, rounds } from "@/lib/api";
 import { getSession, setPinForSession, setSession } from "@/lib/session";
-import { Button, Input } from "@/components/ui";
 
 export default function JoinPage() {
   const params = useParams();
@@ -103,26 +103,13 @@ export default function JoinPage() {
             maxLength={30}
           />
 
-          <div>
-            <label htmlFor="pin" className="mb-1 block text-sm font-medium text-gray-700">
-              4-digit PIN
-            </label>
-            <input
-              id="pin"
-              type="password"
-              inputMode="numeric"
-              pattern="[0-9]{4}"
-              value={pin}
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-                setPin(val);
-              }}
-              placeholder="Your secret PIN"
-              maxLength={4}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-center font-mono text-xl tracking-[0.5em] text-gray-900 transition-colors placeholder:text-gray-400 focus:border-corpo-500 focus:outline-none focus:ring-2 focus:ring-corpo-500/20"
-            />
-            <p className="mt-1 text-xs text-gray-400">Use this PIN to rejoin from another device</p>
-          </div>
+          <PinInput
+            value={pin}
+            onChange={setPin}
+            label="4-digit PIN"
+            helperText="Use this PIN to rejoin from another device"
+            error={error?.toLowerCase().includes("pin") ? error : undefined}
+          />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
