@@ -15,15 +15,15 @@
 
 @layer components {
   .btn-primary {
-    @apply rounded-lg bg-corpo-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-corpo-800 active:bg-corpo-700 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply rounded-lg bg-corpo-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-corpo-800 active:bg-corpo-700 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-corpo-600;
   }
 
   .btn-secondary {
-    @apply rounded-lg border-2 border-corpo-900 px-6 py-3 font-semibold text-corpo-900 transition-colors hover:bg-corpo-50 active:bg-corpo-100 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply rounded-lg border-2 border-corpo-900 px-6 py-3 font-semibold text-corpo-900 transition-colors hover:bg-corpo-50 active:bg-corpo-100 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-corpo-600;
   }
 
   .input-field {
-    @apply w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 transition-colors placeholder:text-gray-400 focus:border-corpo-500 focus:outline-none focus:ring-2 focus:ring-corpo-500/20;
+    @apply w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 transition-colors placeholder:text-gray-400 focus-visible:border-corpo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-corpo-500/20;
   }
 
   .card {
