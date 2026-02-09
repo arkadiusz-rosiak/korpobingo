@@ -19,8 +19,8 @@ export namespace Player {
     joinedAt: string;
   }
 
-  function hashPin(pin: string): string {
-    return createHash("sha256").update(pin).digest("hex");
+  function hashPin(pin: string, roundId: string, playerName: string): string {
+    return createHash("sha256").update(`${roundId}:${playerName}:${pin}`).digest("hex");
   }
 
   function toPublic(player: Info): PublicInfo {
@@ -56,7 +56,7 @@ export namespace Player {
     const player: Info = {
       roundId: input.roundId,
       playerName: name,
-      pinHash: hashPin(input.pin),
+      pinHash: hashPin(input.pin, input.roundId, name),
       joinedAt: new Date().toISOString(),
     };
 
@@ -76,7 +76,7 @@ export namespace Player {
   ): Promise<boolean> {
     const player = await get(roundId, playerName);
     if (!player) return false;
-    return player.pinHash === hashPin(pin);
+    return player.pinHash === hashPin(pin, roundId, playerName);
   }
 
   export async function get(roundId: string, playerName: string): Promise<Info | undefined> {

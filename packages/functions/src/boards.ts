@@ -1,4 +1,5 @@
 import { Board } from "@korpobingo/core/board";
+import { Player } from "@korpobingo/core/player";
 import { Round } from "@korpobingo/core/round";
 import { Word } from "@korpobingo/core/word";
 import { getMethod, json, parseBody, requireParam, wrapHandler } from "./middleware.js";
@@ -14,11 +15,16 @@ export const handler = wrapHandler(async (event) => {
         const roundId = body.roundId as string;
         const playerName = body.playerName as string;
         const cellIndex = body.cellIndex as number;
-        if (!roundId || !playerName || cellIndex === undefined) {
+        const pin = body.pin as string;
+        if (!roundId || !playerName || cellIndex === undefined || !pin) {
           return json(400, {
-            error: "roundId, playerName, and cellIndex are required",
+            error: "roundId, playerName, cellIndex, and pin are required",
             code: "VALIDATION_ERROR",
           });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
         const board = await Board.markCell(roundId, playerName, cellIndex);
         const bingo = Board.checkBingo(board.marked, board.size);
@@ -28,11 +34,17 @@ export const handler = wrapHandler(async (event) => {
       // Create board from top-voted words
       const roundId = body.roundId as string;
       const playerName = body.playerName as string;
-      if (!roundId || !playerName) {
+      const pin = body.pin as string;
+      if (!roundId || !playerName || !pin) {
         return json(400, {
-          error: "roundId and playerName are required",
+          error: "roundId, playerName, and pin are required",
           code: "VALIDATION_ERROR",
         });
+      }
+
+      const pinValid = await Player.verifyPin(roundId, playerName, pin);
+      if (!pinValid) {
+        return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
       }
 
       const round = await Round.get(roundId);
@@ -48,7 +60,8 @@ export const handler = wrapHandler(async (event) => {
         words: wordTexts,
         size: round.boardSize,
       });
-      return json(201, board);
+      const bingo = Board.checkBingo(board.marked, board.size);
+      return json(201, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
     }
     case "GET": {
       const roundId = requireParam(event, "roundId");

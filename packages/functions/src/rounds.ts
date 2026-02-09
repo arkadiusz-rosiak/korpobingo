@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { Player } from "@korpobingo/core/player";
 import { Round } from "@korpobingo/core/round";
 import { getMethod, getParam, json, parseBody, wrapHandler } from "./middleware.js";
 
@@ -11,8 +12,17 @@ export const handler = wrapHandler(async (event) => {
       if (body.action === "updateStatus") {
         const roundId = body.roundId as string;
         const status = body.status as Round.Info["status"];
-        if (!roundId || !status) {
-          return json(400, { error: "roundId and status are required", code: "VALIDATION_ERROR" });
+        const playerName = body.playerName as string;
+        const pin = body.pin as string;
+        if (!roundId || !status || !playerName || !pin) {
+          return json(400, {
+            error: "roundId, status, playerName, and pin are required",
+            code: "VALIDATION_ERROR",
+          });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
         await Round.updateStatus(roundId, status);
         return json(200, { ok: true });

@@ -113,13 +113,22 @@ export namespace Board {
       createdAt: new Date().toISOString(),
     };
 
-    await client.send(
-      new PutCommand({
-        TableName: Resource.Boards.name,
-        Item: board,
-      }),
-    );
-    return board;
+    try {
+      await client.send(
+        new PutCommand({
+          TableName: Resource.Boards.name,
+          Item: board,
+          ConditionExpression: "attribute_not_exists(roundId)",
+        }),
+      );
+      return board;
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "ConditionalCheckFailedException") {
+        const existing = await get(input.roundId, input.playerName);
+        if (existing) return existing;
+      }
+      throw err;
+    }
   }
 
   export async function get(roundId: string, playerName: string): Promise<Info | undefined> {
@@ -153,6 +162,17 @@ export namespace Board {
       throw new ValidationError("Cell index must be non-negative");
     }
 
+    const board = await get(roundId, playerName);
+    if (!board) {
+      throw new ValidationError("Board not found");
+    }
+
+    if (cellIndex >= board.marked.length) {
+      throw new ValidationError(
+        `Cell index ${cellIndex} out of bounds (board has ${board.marked.length} cells)`,
+      );
+    }
+
     await client.send(
       new UpdateCommand({
         TableName: Resource.Boards.name,
@@ -163,10 +183,10 @@ export namespace Board {
       }),
     );
 
-    const board = await get(roundId, playerName);
-    if (!board) {
+    const updated = await get(roundId, playerName);
+    if (!updated) {
       throw new ValidationError("Board not found after update");
     }
-    return board;
+    return updated;
   }
 }

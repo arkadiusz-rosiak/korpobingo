@@ -100,7 +100,7 @@ describe("Board.checkBingo", () => {
     expect(result.lines).toContainEqual({ type: "diagonal", index: 1 });
   });
 
-  it("returns no bingo when none exists", () => {
+  it("detects diagonal bingo from scattered marks", () => {
     const marked = [true, true, false, false, true, false, false, false, true];
     const result = Board.checkBingo(marked, 3);
     // Main diagonal IS complete here (0,4,8)

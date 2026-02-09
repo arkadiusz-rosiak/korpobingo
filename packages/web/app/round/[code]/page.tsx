@@ -9,7 +9,7 @@ import WordInput from "@/components/WordInput";
 import WordList from "@/components/WordList";
 import { players as playersApi, rounds, words as wordsApi } from "@/lib/api";
 import { usePolling } from "@/lib/hooks";
-import { getSession } from "@/lib/session";
+import { getPinForSession, getSession } from "@/lib/session";
 import type { Player, Round, Word } from "@/lib/types";
 
 export default function RoundPage() {
@@ -24,6 +24,7 @@ export default function RoundPage() {
 
   const session = typeof window !== "undefined" ? getSession(code) : null;
   const playerName = session?.playerName ?? "";
+  const pin = typeof window !== "undefined" ? getPinForSession(code) : null;
 
   // Fetch round data
   useEffect(() => {
@@ -72,15 +73,15 @@ export default function RoundPage() {
   }, [freshRound]);
 
   const handleSubmitWord = async (text: string) => {
-    if (!round) return;
-    await wordsApi.submit(round.roundId, text, playerName);
+    if (!round || !pin) return;
+    await wordsApi.submit(round.roundId, text, playerName, pin);
     setToast("Word added!");
   };
 
   const handleVote = async (wordId: string) => {
-    if (!round) return;
+    if (!round || !pin) return;
     try {
-      await wordsApi.vote(round.roundId, wordId, playerName);
+      await wordsApi.vote(round.roundId, wordId, playerName, pin);
     } catch (err) {
       if (err instanceof Error && err.message.includes("Conflict")) {
         setToast("Already voted on this word");
@@ -89,9 +90,9 @@ export default function RoundPage() {
   };
 
   const handleStartGame = async () => {
-    if (!round) return;
+    if (!round || !pin) return;
     try {
-      await rounds.updateStatus(round.roundId, "playing");
+      await rounds.updateStatus(round.roundId, "playing", pin);
       router.push(`/round/${code}/board`);
     } catch (err) {
       setToast(err instanceof Error ? err.message : "Failed to start");

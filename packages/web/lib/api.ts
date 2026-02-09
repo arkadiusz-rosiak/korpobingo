@@ -53,25 +53,25 @@ export const rounds = {
 
   get: (roundId: string) => request<import("./types").Round>(`${ROUNDS_API}${qs({ roundId })}`),
 
-  updateStatus: (roundId: string, status: string) =>
+  updateStatus: (roundId: string, status: string, pin: string) =>
     request<{ ok: boolean }>(`${ROUNDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ action: "updateStatus", roundId, status }),
+      body: JSON.stringify({ action: "updateStatus", roundId, status, pin }),
     }),
 };
 
 // --- Words ---
 export const words = {
-  submit: (roundId: string, text: string, submittedBy: string) =>
+  submit: (roundId: string, text: string, submittedBy: string, pin: string) =>
     request<import("./types").Word>(`${WORDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ roundId, text, submittedBy }),
+      body: JSON.stringify({ roundId, text, submittedBy, pin }),
     }),
 
-  vote: (roundId: string, wordId: string, playerName: string) =>
+  vote: (roundId: string, wordId: string, playerName: string, pin: string) =>
     request<{ ok: boolean }>(`${WORDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ action: "vote", roundId, wordId, playerName }),
+      body: JSON.stringify({ action: "vote", roundId, wordId, playerName, pin }),
     }),
 
   list: (roundId: string, sortBy?: "votes") =>
@@ -98,19 +98,19 @@ export const players = {
 
 // --- Boards ---
 export const boards = {
-  create: (roundId: string, playerName: string) =>
+  create: (roundId: string, playerName: string, pin: string) =>
     request<import("./types").Board>(`${BOARDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ roundId, playerName }),
+      body: JSON.stringify({ roundId, playerName, pin }),
     }),
 
   get: (roundId: string, playerName: string) =>
     request<import("./types").BoardWithBingo>(`${BOARDS_API}${qs({ roundId, playerName })}`),
 
-  mark: (roundId: string, playerName: string, cellIndex: number) =>
+  mark: (roundId: string, playerName: string, cellIndex: number, pin: string) =>
     request<import("./types").BoardWithBingo>(`${BOARDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ action: "mark", roundId, playerName, cellIndex }),
+      body: JSON.stringify({ action: "mark", roundId, playerName, cellIndex, pin }),
     }),
 };
 

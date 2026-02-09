@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ToastProps {
   message: string;
@@ -11,14 +11,16 @@ interface ToastProps {
 
 export default function Toast({ message, type = "info", onClose, duration = 3000 }: ToastProps) {
   const [visible, setVisible] = useState(true);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-      setTimeout(onClose, 200);
+      setTimeout(() => onCloseRef.current(), 200);
     }, duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]);
 
   const colors = {
     success: "bg-green-600",

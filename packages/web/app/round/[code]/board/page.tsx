@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
 import { boards, players as playersApi, rounds } from "@/lib/api";
 import { useHaptic, usePolling } from "@/lib/hooks";
-import { getSession } from "@/lib/session";
+import { getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
 
 interface PlayerProgress {
@@ -26,6 +26,7 @@ export default function BoardPage() {
 
   const session = typeof window !== "undefined" ? getSession(code) : null;
   const playerName = session?.playerName ?? "";
+  const pin = typeof window !== "undefined" ? getPinForSession(code) : null;
 
   const [round, setRound] = useState<Round | null>(null);
   const [board, setBoard] = useState<BoardWithBingo | null>(null);
@@ -43,7 +44,7 @@ export default function BoardPage() {
 
   // Initial fetch
   useEffect(() => {
-    if (!playerName) return;
+    if (!playerName || !pin) return;
 
     const init = async () => {
       try {
@@ -57,7 +58,7 @@ export default function BoardPage() {
           prevBingo.current = b.hasBingo;
         } catch {
           // Board doesn't exist — create it
-          const newBoard = await boards.create(r.roundId, playerName);
+          const newBoard = await boards.create(r.roundId, playerName, pin);
           const b = await boards.get(r.roundId, playerName);
           setBoard(b ?? (newBoard as unknown as BoardWithBingo));
         }
@@ -68,23 +69,17 @@ export default function BoardPage() {
       }
     };
     init();
-  }, [code, playerName, router]);
+  }, [code, playerName, pin, router]);
 
   // Poll other players' progress
   const fetchProgress = useCallback(async (): Promise<PlayerProgress[]> => {
     if (!round) return [];
-    const [playerList, allBoards] = await Promise.all([
-      playersApi.list(round.roundId),
-      Promise.all([]).then(async () => {
-        const pList = await playersApi.list(round.roundId);
-        const boardPromises = pList.map((p: Player) =>
-          boards.get(round.roundId, p.playerName).catch(() => null),
-        );
-        return Promise.all(boardPromises);
-      }),
-    ]);
+    const playerList = await playersApi.list(round.roundId);
+    const boardResults = await Promise.all(
+      playerList.map((p: Player) => boards.get(round.roundId, p.playerName).catch(() => null)),
+    );
     return playerList.map((p: Player, i: number) => {
-      const b = allBoards[i];
+      const b = boardResults[i];
       return {
         playerName: p.playerName,
         markedCount: b ? b.marked.filter(Boolean).length : 0,
@@ -94,14 +89,18 @@ export default function BoardPage() {
     });
   }, [round]);
 
-  const { data: progress } = usePolling<PlayerProgress[]>(fetchProgress, 4000, !!round);
+  const { data: progress, error: progressError } = usePolling<PlayerProgress[]>(
+    fetchProgress,
+    4000,
+    !!round,
+  );
 
   useEffect(() => {
     if (progress) setPlayerProgress(progress);
   }, [progress]);
 
   const handleToggleCell = async (index: number) => {
-    if (!round || !board || board.marked[index]) return;
+    if (!round || !board || board.marked[index] || !pin) return;
 
     haptic.tap();
 
@@ -111,7 +110,7 @@ export default function BoardPage() {
     setBoard({ ...board, marked: newMarked });
 
     try {
-      const updated = await boards.mark(round.roundId, playerName, index);
+      const updated = await boards.mark(round.roundId, playerName, index, pin);
       setBoard(updated);
 
       // Check if bingo just happened
@@ -147,12 +146,17 @@ export default function BoardPage() {
           onToggleCell={handleToggleCell}
         />
 
-        <PlayerList
-          players={playerProgress}
-          shareCode={code}
-          currentPlayer={playerName}
-          showBoards
-        />
+        <div>
+          {progressError && (
+            <p className="mb-2 text-xs text-orange-500">Connection lost — retrying...</p>
+          )}
+          <PlayerList
+            players={playerProgress}
+            shareCode={code}
+            currentPlayer={playerName}
+            showBoards
+          />
+        </div>
       </main>
 
       {showBingoModal && <BingoModal onClose={() => setShowBingoModal(false)} />}

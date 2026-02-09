@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { Player } from "@korpobingo/core/player";
 import { Word } from "@korpobingo/core/word";
 import { getMethod, getParam, json, parseBody, requireParam, wrapHandler } from "./middleware.js";
 
@@ -12,20 +13,38 @@ export const handler = wrapHandler(async (event) => {
         const roundId = body.roundId as string;
         const wordId = body.wordId as string;
         const playerName = body.playerName as string;
-        if (!roundId || !wordId || !playerName) {
+        const pin = body.pin as string;
+        if (!roundId || !wordId || !playerName || !pin) {
           return json(400, {
-            error: "roundId, wordId, and playerName are required",
+            error: "roundId, wordId, playerName, and pin are required",
             code: "VALIDATION_ERROR",
           });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
         await Word.vote(roundId, wordId, playerName);
         return json(200, { ok: true });
       }
+      const roundId = body.roundId as string;
+      const submittedBy = body.submittedBy as string;
+      const pin = body.pin as string;
+      if (!roundId || !submittedBy || !pin) {
+        return json(400, {
+          error: "roundId, submittedBy, and pin are required",
+          code: "VALIDATION_ERROR",
+        });
+      }
+      const pinValid = await Player.verifyPin(roundId, submittedBy, pin);
+      if (!pinValid) {
+        return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+      }
       const word = await Word.submit({
-        roundId: body.roundId as string,
+        roundId,
         wordId: crypto.randomUUID(),
         text: body.text as string,
-        submittedBy: body.submittedBy as string,
+        submittedBy,
       });
       return json(201, word);
     }

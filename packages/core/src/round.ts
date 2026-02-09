@@ -81,7 +81,26 @@ export namespace Round {
     return item ? (item as Info) : undefined;
   }
 
+  const VALID_STATUSES: ReadonlySet<string> = new Set(["collecting", "playing", "finished"]);
+  const VALID_TRANSITIONS: Record<string, string> = {
+    collecting: "playing",
+    playing: "finished",
+  };
+
   export async function updateStatus(roundId: string, status: Info["status"]): Promise<void> {
+    if (!VALID_STATUSES.has(status)) {
+      throw new ValidationError(`Invalid status: ${status}`);
+    }
+
+    const round = await get(roundId);
+    if (!round) {
+      throw new NotFoundError(`Round ${roundId} not found`);
+    }
+
+    if (VALID_TRANSITIONS[round.status] !== status) {
+      throw new ValidationError(`Cannot transition from "${round.status}" to "${status}"`);
+    }
+
     await client.send(
       new UpdateCommand({
         TableName: Resource.Rounds.name,

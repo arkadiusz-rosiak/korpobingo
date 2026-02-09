@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ApiRequestError, players, rounds } from "@/lib/api";
-import { getSession, setSession } from "@/lib/session";
+import { getSession, setPinForSession, setSession } from "@/lib/session";
 
 export default function JoinPage() {
   const params = useParams();
@@ -44,14 +44,16 @@ export default function JoinPage() {
     setError("");
     try {
       await players.register(roundId, name.trim(), pin);
-      setSession(code, name.trim(), pin);
+      setSession(code, name.trim());
+      setPinForSession(code, pin);
       router.push(`/round/${code}`);
     } catch (err) {
       if (err instanceof ApiRequestError && err.message.includes("already exists")) {
         // Player exists — try verifying PIN to rejoin
         try {
           await players.verify(roundId, name.trim(), pin);
-          setSession(code, name.trim(), pin);
+          setSession(code, name.trim());
+          setPinForSession(code, pin);
           router.push(`/round/${code}`);
         } catch {
           setError("Player name taken and PIN doesn't match");

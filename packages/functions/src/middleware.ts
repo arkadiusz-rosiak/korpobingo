@@ -15,7 +15,8 @@ export function getParam(event: ApiEvent, name: string): string | undefined {
 export function parseBody(event: ApiEvent): Record<string, unknown> {
   if (!event.body) return {};
   try {
-    return JSON.parse(event.body) as Record<string, unknown>;
+    const raw = event.isBase64Encoded ? Buffer.from(event.body, "base64").toString() : event.body;
+    return JSON.parse(raw) as Record<string, unknown>;
   } catch {
     throw new ValidationError("Invalid JSON body");
   }
