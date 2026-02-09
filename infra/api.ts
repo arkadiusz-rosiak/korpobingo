@@ -6,7 +6,7 @@ export const roundsApi = new sst.aws.Function("RoundsApi", {
   url: {
     cors: {
       allowOrigins: ["*"],
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
     },
   },
@@ -18,7 +18,7 @@ export const wordsApi = new sst.aws.Function("WordsApi", {
   url: {
     cors: {
       allowOrigins: ["*"],
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
     },
   },
@@ -30,7 +30,7 @@ export const playersApi = new sst.aws.Function("PlayersApi", {
   url: {
     cors: {
       allowOrigins: ["*"],
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
     },
   },
@@ -42,7 +42,7 @@ export const boardsApi = new sst.aws.Function("BoardsApi", {
   url: {
     cors: {
       allowOrigins: ["*"],
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
     },
   },
