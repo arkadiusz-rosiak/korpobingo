@@ -19,8 +19,10 @@ const config: Config = {
         },
       },
       animation: {
-        stamp: "stamp 0.3s ease-out",
+        stamp: "stamp 0.25s ease-out",
+        unmark: "unmark 0.2s ease-in",
         "fade-in": "fadeIn 0.2s ease-out",
+        "bingo-glow": "bingoGlow 1.5s ease-in-out infinite",
       },
       keyframes: {
         stamp: {
@@ -28,9 +30,17 @@ const config: Config = {
           "60%": { transform: "scale(1.05)" },
           "100%": { transform: "scale(1)" },
         },
+        unmark: {
+          "0%": { opacity: "1", transform: "scale(1)" },
+          "100%": { opacity: "0.8", transform: "scale(0.97)" },
+        },
         fadeIn: {
           "0%": { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        bingoGlow: {
+          "0%, 100%": { boxShadow: "0 0 4px 1px rgba(255, 215, 0, 0.3)" },
+          "50%": { boxShadow: "0 0 12px 4px rgba(255, 215, 0, 0.6)" },
         },
       },
     },
