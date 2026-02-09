@@ -1,0 +1,16 @@
+{
+  "name": "@korpobingo/scripts",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@korpobingo/core": "*",
+    "sst": "*"
+  },
+  "scripts": {
+    "shell": "sst shell tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@korpobingo/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@korpobingo/core": "*",
+    "sst": "*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8"
+  }
+}
