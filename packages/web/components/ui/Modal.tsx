@@ -37,7 +37,7 @@ export default function Modal({ children, open, onClose, className = "" }: Modal
       aria-modal="true"
     >
       <div
-        className={`animate-fade-in w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-xl ${className}`}
+        className={`motion-safe:animate-fade-in w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-xl ${className}`}
       >
         {children}
       </div>

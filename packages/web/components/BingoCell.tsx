@@ -37,13 +37,14 @@ export default function BingoCell({
       onClick={readOnly ? undefined : onToggle}
       disabled={readOnly}
       onAnimationEnd={handleAnimationEnd}
-      className={`relative flex aspect-square items-center justify-center rounded-lg border-2 p-1 text-center text-xs font-medium transition-colors duration-200 sm:text-sm ${
+      className={`relative flex aspect-square min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border-2 p-1 text-center font-medium transition-colors duration-200 ${
         marked
           ? highlight
             ? "border-yellow-400 bg-yellow-50 text-yellow-800 shadow-md motion-safe:animate-bingo-glow"
             : "border-corpo-600 bg-corpo-50 text-corpo-900"
           : "border-gray-200 bg-white text-gray-700 hover:border-corpo-300 hover:bg-corpo-50"
       } ${animClass} ${readOnly ? "cursor-default" : "cursor-pointer active:scale-95"}`}
+      style={{ fontSize: "clamp(0.7rem, 2.5vw, 0.9rem)" }}
     >
       <span className="line-clamp-3 break-words leading-tight">{text}</span>
       {marked && (

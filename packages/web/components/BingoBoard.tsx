@@ -43,8 +43,11 @@ export default function BingoBoard({
 
   return (
     <div
-      className="mx-auto grid w-full max-w-md gap-2"
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
+      className="mx-auto grid w-full gap-1.5 sm:gap-2"
+      style={{
+        gridTemplateColumns: `repeat(${size}, 1fr)`,
+        maxWidth: "var(--board-size)",
+      }}
     >
       {cells.map((text, i) => (
         <BingoCell
