@@ -11,14 +11,19 @@ export default $config({
   },
   async run() {
     const storage = await import("./infra/storage");
-    await import("./infra/api");
-    await import("./infra/web");
+    const api = await import("./infra/api");
+    const { web } = await import("./infra/web");
 
     return {
       RoundsTable: storage.roundsTable.name,
       WordsTable: storage.wordsTable.name,
       PlayersTable: storage.playersTable.name,
       BoardsTable: storage.boardsTable.name,
+      RoundsApiUrl: api.roundsApi.url,
+      WordsApiUrl: api.wordsApi.url,
+      PlayersApiUrl: api.playersApi.url,
+      BoardsApiUrl: api.boardsApi.url,
+      WebUrl: web.url,
     };
   },
 });
