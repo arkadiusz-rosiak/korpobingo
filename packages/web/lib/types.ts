@@ -14,6 +14,7 @@ export interface Word {
   text: string;
   submittedBy: string;
   votes: number;
+  votedBy: string[];
   createdAt: string;
 }
 
@@ -28,10 +29,21 @@ export interface Board {
   playerName: string;
   cells: string[];
   marked: boolean[];
-  size: number;
+  size: 3 | 4;
   createdAt: string;
+}
+
+export interface BingoLine {
+  type: "row" | "col" | "diagonal";
+  index: number;
 }
 
 export interface BoardWithBingo extends Board {
   hasBingo: boolean;
+  bingoLines: BingoLine[];
+}
+
+export interface ApiError {
+  error: string;
+  code: string;
 }

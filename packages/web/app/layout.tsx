@@ -3,19 +3,13 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "KorpoBingo",
-  description: "Korporacyjne bingo na nudne spotkania",
+  description: "Corporate buzzword bingo for boring meetings",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl">
-      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
-        {children}
-      </body>
+    <html lang="en">
+      <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
 }
