@@ -3,7 +3,7 @@ import { useState } from "react";
 import DurationPicker from "./DurationPicker";
 
 const meta: Meta<typeof DurationPicker> = {
-  title: "Components/DurationPicker",
+  title: "Game/DurationPicker",
   component: DurationPicker,
   parameters: {
     layout: "centered",

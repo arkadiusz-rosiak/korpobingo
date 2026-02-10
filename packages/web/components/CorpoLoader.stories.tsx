@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import CorpoLoader from "./CorpoLoader";
 
 const meta: Meta<typeof CorpoLoader> = {
-  title: "Components/CorpoLoader",
+  title: "Feedback/CorpoLoader",
   component: CorpoLoader,
   parameters: { layout: "centered" },
 };
