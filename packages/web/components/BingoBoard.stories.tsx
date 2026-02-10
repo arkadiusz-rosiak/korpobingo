@@ -103,6 +103,26 @@ export const WithBingoDiagonal: Story = {
   },
 };
 
+export const LongWords: Story = {
+  args: {
+    cells: [
+      "Synergy",
+      "Circle back",
+      "Niedostępność­wielopoziomowa",
+      "Touch base",
+      "Zusammenarbeitsfähigkeit",
+      "Bandwidth",
+      "Donaudampfschifffahrtsgesellschaftskapitän",
+      "Pivot",
+      "Leverage",
+    ],
+    marked: Array(9).fill(false),
+    size: 3,
+    bingoLines: [],
+    readOnly: false,
+  },
+};
+
 export const ReadOnly: Story = {
   args: {
     cells: buzzwords3x3,

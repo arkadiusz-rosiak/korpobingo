@@ -53,7 +53,7 @@ const BingoCell = forwardRef<HTMLButtonElement, BingoCellProps>(
           onFocus={onFocus}
           tabIndex={tabIndex}
           aria-pressed={marked}
-          className={`relative flex aspect-square min-h-[44px] min-w-[44px] w-full items-center justify-center rounded-lg border-2 p-1 text-center font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-corpo-600 ${
+          className={`relative flex aspect-square min-h-[44px] min-w-[44px] w-full items-center justify-center overflow-hidden rounded-lg border-2 p-1 text-center font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-corpo-600 ${
             marked
               ? highlight
                 ? "border-yellow-400 bg-yellow-50 text-yellow-800 shadow-md motion-safe:animate-bingo-glow"
@@ -62,7 +62,7 @@ const BingoCell = forwardRef<HTMLButtonElement, BingoCellProps>(
           } ${animClass} ${readOnly ? "cursor-default" : "cursor-pointer active:scale-95"}`}
           style={{ fontSize: "clamp(0.7rem, 2.5vw, 0.9rem)" }}
         >
-          <span className="line-clamp-3 break-words leading-tight">{text}</span>
+          <span className="line-clamp-3 break-all leading-tight">{text}</span>
           {marked && (
             <span
               className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-corpo-900 text-[10px] text-white"
