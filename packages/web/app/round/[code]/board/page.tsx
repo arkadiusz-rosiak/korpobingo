@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
 import ToastContainer from "@/components/ToastContainer";
 import Button from "@/components/ui/Button";
+import ShareCode from "@/components/ShareCode";
 import Modal from "@/components/ui/Modal";
 import { boards, players as playersApi, rounds } from "@/lib/api";
 import { useHaptic, usePolling } from "@/lib/hooks";
@@ -39,6 +40,7 @@ export default function BoardPage() {
   const [bingoCount, setBingoCount] = useState(0);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const prevBingo = useRef(false);
   const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
@@ -186,7 +188,11 @@ export default function BoardPage() {
 
   return (
     <div className="min-h-screen pb-8">
-      <Header shareCode={code} roundName={round?.name} />
+      <Header
+        shareCode={code}
+        roundName={round?.name}
+        onShareCodeClick={() => setShowShareModal(true)}
+      />
 
       <main className="mx-auto max-w-5xl p-4">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-center">
@@ -238,6 +244,12 @@ export default function BoardPage() {
       {showBingoModal && (
         <BingoModal bingoCount={bingoCount} onClose={() => setShowBingoModal(false)} />
       )}
+      <Modal open={showShareModal} onClose={() => setShowShareModal(false)}>
+        <div className="flex flex-col items-center">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Zaproś graczy</h2>
+          <ShareCode code={code} />
+        </div>
+      </Modal>
       <Modal open={showLeaveDialog} onClose={() => setShowLeaveDialog(false)}>
         <h2 className="text-lg font-semibold text-gray-900">Opuść rundę?</h2>
         <p className="mt-2 text-sm text-gray-600">

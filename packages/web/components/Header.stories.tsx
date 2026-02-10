@@ -28,3 +28,18 @@ export const WithShareCodeAndName: Story = {
     roundName: "Q4 Planning Meeting",
   },
 };
+
+export const WithClickableShareCode: Story = {
+  args: {
+    shareCode: "ABC123",
+    onShareCodeClick: () => alert("Share code clicked"),
+  },
+};
+
+export const WithClickableShareCodeAndName: Story = {
+  args: {
+    shareCode: "XYZ789",
+    roundName: "Q4 Planning Meeting",
+    onShareCodeClick: () => alert("Share code clicked"),
+  },
+};
