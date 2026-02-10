@@ -155,6 +155,12 @@ export const boards = {
       method: "POST",
       body: JSON.stringify({ action: "mark", roundId, playerName, cellIndex, pin }),
     }),
+
+  unmark: (roundId: string, playerName: string, cellIndex: number, pin: string) =>
+    request<import("./types").BoardWithBingo>(`${BOARDS_API}`, {
+      method: "POST",
+      body: JSON.stringify({ action: "unmark", roundId, playerName, cellIndex, pin }),
+    }),
 };
 
 export { ApiRequestError };
