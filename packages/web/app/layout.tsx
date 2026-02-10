@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -16,7 +17,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
