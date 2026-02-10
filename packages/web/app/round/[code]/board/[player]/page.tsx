@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import BingoBoard from "@/components/BingoBoard";
 import Header from "@/components/Header";
 import { ApiRequestError, boards, rounds } from "@/lib/api";
-import { usePolling } from "@/lib/hooks";
+import { usePageTitle, usePolling } from "@/lib/hooks";
 import type { BoardWithBingo } from "@/lib/types";
 
 export default function PlayerBoardPage() {
@@ -13,6 +13,8 @@ export default function PlayerBoardPage() {
   const router = useRouter();
   const code = (params.code as string).toUpperCase();
   const playerName = decodeURIComponent(params.player as string);
+
+  usePageTitle(`${playerName}'s Board`);
 
   const [roundId, setRoundId] = useState<string | null>(null);
   const [roundName, setRoundName] = useState("");

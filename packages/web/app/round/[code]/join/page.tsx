@@ -4,9 +4,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Input, PinInput } from "@/components/ui";
 import { ApiRequestError, players, rounds } from "@/lib/api";
+import { usePageTitle } from "@/lib/hooks";
 import { getSession, setPinForSession, setSession } from "@/lib/session";
 
 export default function JoinPage() {
+  usePageTitle("Join");
   const params = useParams();
   const router = useRouter();
   const code = (params.code as string).toUpperCase();

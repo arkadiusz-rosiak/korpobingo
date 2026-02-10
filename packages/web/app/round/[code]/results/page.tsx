@@ -6,6 +6,7 @@ import BingoBoard from "@/components/BingoBoard";
 import Header from "@/components/Header";
 import { Badge, Button, Card, CardBody, CardHeader } from "@/components/ui";
 import { boards, players as playersApi, rounds } from "@/lib/api";
+import { usePageTitle } from "@/lib/hooks";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
 
 interface PlayerRanking {
@@ -55,6 +56,8 @@ function pickHeader(roundId: string): string {
 }
 
 export default function ResultsPage() {
+  usePageTitle("Results");
+
   const params = useParams();
   const router = useRouter();
   const code = (params.code as string).toUpperCase();

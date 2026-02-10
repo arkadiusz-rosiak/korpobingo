@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Input } from "@/components/ui";
 import { rounds } from "@/lib/api";
+import { usePageTitle } from "@/lib/hooks";
 
 export default function CreatePage() {
+  usePageTitle("New Round");
   const router = useRouter();
   const [name, setName] = useState("");
   const [boardSize, setBoardSize] = useState<3 | 4>(4);
