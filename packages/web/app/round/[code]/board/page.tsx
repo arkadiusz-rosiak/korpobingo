@@ -7,10 +7,12 @@ import BingoModal from "@/components/BingoModal";
 import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
 import ToastContainer from "@/components/ToastContainer";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 import { boards, players as playersApi, rounds } from "@/lib/api";
 import { useHaptic, usePolling } from "@/lib/hooks";
 import { useNotifications } from "@/lib/notifications";
-import { getPinForSession, getSession } from "@/lib/session";
+import { clearSession, getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
 
 interface PlayerProgress {
@@ -36,6 +38,7 @@ export default function BoardPage() {
   const [showBingoModal, setShowBingoModal] = useState(false);
   const [bingoCount, setBingoCount] = useState(0);
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const prevBingo = useRef(false);
   const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
@@ -162,6 +165,17 @@ export default function BoardPage() {
     }
   };
 
+  const handleLeaveRound = async () => {
+    if (!round || !pin) return;
+    try {
+      await boards.leave(round.roundId, playerName, pin);
+      clearSession(code);
+      router.push("/");
+    } catch {
+      // silently ignore — user stays on page
+    }
+  };
+
   if (loading || !board) {
     return (
       <main className="flex min-h-screen items-center justify-center">
@@ -187,6 +201,11 @@ export default function BoardPage() {
               bingoLines={board.bingoLines}
               onToggleCell={handleToggleCell}
             />
+            <div className="mt-4 flex justify-center">
+              <Button variant="ghost" size="sm" onClick={() => setShowLeaveDialog(true)}>
+                Opuść rundę
+              </Button>
+            </div>
           </div>
 
           <div className="w-full md:min-w-[240px] md:max-w-xs">
@@ -219,6 +238,21 @@ export default function BoardPage() {
       {showBingoModal && (
         <BingoModal bingoCount={bingoCount} onClose={() => setShowBingoModal(false)} />
       )}
+      <Modal open={showLeaveDialog} onClose={() => setShowLeaveDialog(false)}>
+        <h2 className="text-lg font-semibold text-gray-900">Opuść rundę?</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Twoja plansza zostanie usunięta. Po ponownym dołączeniu otrzymasz nową planszę z losowym
+          układem słów.
+        </p>
+        <div className="mt-4 flex gap-3 justify-end">
+          <Button variant="ghost" size="sm" onClick={() => setShowLeaveDialog(false)}>
+            Anuluj
+          </Button>
+          <Button variant="danger" size="sm" onClick={handleLeaveRound}>
+            Opuść rundę
+          </Button>
+        </div>
+      </Modal>
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
