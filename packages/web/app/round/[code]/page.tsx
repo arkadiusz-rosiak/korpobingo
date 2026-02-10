@@ -93,9 +93,13 @@ export default function RoundPage() {
 
   const handleDelete = async (wordId: string) => {
     if (!round || !pin) return;
-    await wordsApi.remove(round.roundId, wordId, playerName, pin);
-    refreshWords();
-    addToast("Word deleted", "success");
+    try {
+      await wordsApi.remove(round.roundId, wordId, playerName, pin);
+      refreshWords();
+      addToast("Word deleted", "success");
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Failed to delete", "error");
+    }
   };
 
   const handleVote = async (wordId: string) => {
