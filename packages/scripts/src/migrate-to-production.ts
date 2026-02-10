@@ -41,7 +41,7 @@ async function queryAllByRoundId(tableName: string): Promise<Record<string, unkn
         KeyConditionExpression: "roundId = :rid",
         ExpressionAttributeValues: { ":rid": ROUND_ID },
         ExclusiveStartKey: lastKey,
-      })
+      }),
     );
     items.push(...(result.Items ?? []));
     lastKey = result.LastEvaluatedKey;
@@ -61,7 +61,7 @@ async function batchWrite(tableName: string, items: Record<string, unknown>[]): 
             PutRequest: { Item: item },
           })),
         },
-      })
+      }),
     );
   }
 }
@@ -74,7 +74,7 @@ async function main() {
     new GetCommand({
       TableName: TABLE_MAP.rounds.dev,
       Key: { roundId: ROUND_ID },
-    })
+    }),
   );
   const round = roundResult.Item;
   if (!round) {
