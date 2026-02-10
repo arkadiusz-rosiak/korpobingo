@@ -8,7 +8,7 @@ import ToastContainer from "@/components/ToastContainer";
 import WordInput from "@/components/WordInput";
 import WordList from "@/components/WordList";
 import { players as playersApi, rounds, words as wordsApi } from "@/lib/api";
-import { usePolling } from "@/lib/hooks";
+import { usePageTitle, usePolling } from "@/lib/hooks";
 import { useNotifications } from "@/lib/notifications";
 import { getPinForSession, getSession } from "@/lib/session";
 import type { Player, Round, Word } from "@/lib/types";
@@ -27,6 +27,8 @@ export default function RoundPage() {
   const [error, setError] = useState("");
   const { toasts, addToast, dismissToast, notifyPlayerChanges, notifyStatusChange } =
     useNotifications(playerName);
+
+  usePageTitle(round?.name ?? "Round");
 
   // Fetch round data
   useEffect(() => {
