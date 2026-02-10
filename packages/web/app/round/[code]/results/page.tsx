@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BingoBoard from "@/components/BingoBoard";
 import Header from "@/components/Header";
 import { Badge, Button, Card, CardBody, CardHeader } from "@/components/ui";

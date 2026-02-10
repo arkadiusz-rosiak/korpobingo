@@ -1,0 +1,7 @@
+node_modules
+.next
+.sst
+dist
+sst-env.d.ts
+storybook-static
+package-lock.json
