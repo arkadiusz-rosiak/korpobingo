@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import BingoBoard from "@/components/BingoBoard";
 import Header from "@/components/Header";
-import { boards, rounds } from "@/lib/api";
+import { ApiRequestError, boards, rounds } from "@/lib/api";
 import { usePolling } from "@/lib/hooks";
 import type { BoardWithBingo } from "@/lib/types";
 
@@ -29,7 +29,35 @@ export default function PlayerBoardPage() {
     [roundId, playerName],
   );
 
-  const { data: board } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
+  const { data: board, error } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
+
+  const boardNotFound =
+    error instanceof ApiRequestError && error.code === "NOT_FOUND";
+
+  if (boardNotFound) {
+    return (
+      <div className="min-h-screen pb-8">
+        <Header shareCode={code} roundName={roundName} />
+        <main className="mx-auto max-w-2xl space-y-4 p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">{playerName}</h2>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="text-sm text-corpo-900 hover:underline"
+            >
+              Wróć
+            </button>
+          </div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+            <p className="text-gray-500">
+              Gracz nie otworzył jeszcze swojej planszy.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!board) {
     return (
