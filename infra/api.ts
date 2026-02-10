@@ -2,6 +2,14 @@ import { boardsTable, playersTable, roundsTable, wordsTable } from "./storage";
 
 const tables = [roundsTable, wordsTable, playersTable, boardsTable];
 
+const functionTransform: sst.aws.ApiGatewayV2RouteArgs["transform"] = {
+  function: {
+    logging: {
+      retention: "30 days",
+    },
+  },
+};
+
 export const api = new sst.aws.ApiGatewayV2("Api", {
   cors: {
     allowOrigins: ["*"],
@@ -13,19 +21,23 @@ export const api = new sst.aws.ApiGatewayV2("Api", {
 api.route("ANY /rounds", {
   handler: "packages/functions/src/rounds.handler",
   link: tables,
+  transform: functionTransform,
 });
 
 api.route("ANY /words", {
   handler: "packages/functions/src/words.handler",
   link: tables,
+  transform: functionTransform,
 });
 
 api.route("ANY /players", {
   handler: "packages/functions/src/players.handler",
   link: tables,
+  transform: functionTransform,
 });
 
 api.route("ANY /boards", {
   handler: "packages/functions/src/boards.handler",
   link: tables,
+  transform: functionTransform,
 });
