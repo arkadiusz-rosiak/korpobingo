@@ -92,6 +92,6 @@ export namespace Word {
 
   export async function listByVotes(roundId: string): Promise<Info[]> {
     const words = await listByRound(roundId);
-    return words.sort((a, b) => b.votes - a.votes);
+    return words.sort((a, b) => b.votes - a.votes || a.text.localeCompare(b.text));
   }
 }

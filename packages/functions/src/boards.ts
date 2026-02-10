@@ -53,7 +53,8 @@ export const handler = wrapHandler(async (event) => {
       }
 
       const words = await Word.listByVotes(roundId);
-      const wordTexts = words.map((w) => w.text);
+      const totalCells = round.boardSize * round.boardSize;
+      const wordTexts = words.slice(0, totalCells).map((w) => w.text);
       const board = await Board.create({
         roundId,
         playerName,
