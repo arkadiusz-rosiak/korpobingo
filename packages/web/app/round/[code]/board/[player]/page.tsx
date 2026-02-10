@@ -32,7 +32,7 @@ export default function PlayerBoardPage() {
   const { data: board, error } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
 
   const boardNotFound =
-    error instanceof ApiRequestError && error.code === "NOT_FOUND";
+    !board && error instanceof ApiRequestError && error.code === "NOT_FOUND";
 
   if (boardNotFound) {
     return (

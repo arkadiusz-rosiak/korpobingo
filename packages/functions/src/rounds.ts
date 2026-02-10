@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
+import { Board } from "@korpobingo/core/board";
 import { Player } from "@korpobingo/core/player";
 import { Round } from "@korpobingo/core/round";
+import { Word } from "@korpobingo/core/word";
 import { getMethod, getParam, json, parseBody, wrapHandler } from "./middleware.js";
 
 export const handler = wrapHandler(async (event) => {
@@ -24,7 +26,32 @@ export const handler = wrapHandler(async (event) => {
         if (!pinValid) {
           return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
+        const round = await Round.get(roundId);
+        if (!round) {
+          return json(404, { error: "Round not found", code: "NOT_FOUND" });
+        }
+
         await Round.updateStatus(roundId, status);
+
+        // When starting the game, create boards for all registered players
+        if (status === "playing") {
+          const players = await Player.listByRound(roundId);
+          const words = await Word.listByVotes(roundId);
+          const totalCells = round.boardSize * round.boardSize;
+          const wordTexts = words.slice(0, totalCells).map((w) => w.text);
+
+          await Promise.all(
+            players.map((p) =>
+              Board.create({
+                roundId,
+                playerName: p.playerName,
+                words: wordTexts,
+                size: round.boardSize,
+              }),
+            ),
+          );
+        }
+
         return json(200, { ok: true });
       }
       const round = await Round.create({
