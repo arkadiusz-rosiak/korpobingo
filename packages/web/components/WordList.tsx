@@ -5,6 +5,7 @@ import type { Word } from "@/lib/types";
 interface WordListProps {
   words: Word[];
   onVote: (wordId: string) => Promise<void>;
+  onUnvote?: (wordId: string) => Promise<void>;
   currentPlayer: string;
   disabled?: boolean;
 }
@@ -12,6 +13,7 @@ interface WordListProps {
 export default function WordList({
   words,
   onVote,
+  onUnvote,
   currentPlayer,
   disabled = false,
 }: WordListProps) {
@@ -33,13 +35,15 @@ export default function WordList({
             <span className="text-xs text-gray-400">by {word.submittedBy}</span>
             <button
               type="button"
-              onClick={() => onVote(word.wordId)}
-              disabled={hasVoted || disabled}
+              onClick={() =>
+                hasVoted ? onUnvote?.(word.wordId) : onVote(word.wordId)
+              }
+              disabled={!hasVoted && disabled}
               className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                 hasVoted
-                  ? "bg-corpo-100 text-corpo-900"
+                  ? "bg-corpo-100 text-corpo-900 hover:bg-red-50 hover:text-red-700"
                   : "bg-gray-100 text-gray-600 hover:bg-corpo-50 hover:text-corpo-900"
-              } disabled:cursor-not-allowed`}
+              } disabled:cursor-not-allowed disabled:opacity-50`}
             >
               <span>{hasVoted ? "\u2605" : "\u2606"}</span>
               <span>{word.votes}</span>

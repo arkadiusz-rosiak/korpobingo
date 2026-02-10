@@ -79,6 +79,45 @@ export namespace Word {
     );
   }
 
+  export async function unvote(
+    roundId: string,
+    wordId: string,
+    playerName: string,
+  ): Promise<void> {
+    if (!playerName.trim()) {
+      throw new ValidationError("Player name is required to unvote");
+    }
+    const trimmedName = playerName.trim();
+
+    // Read current word to find player's index in votedBy
+    const words = await listByRound(roundId);
+    const word = words.find((w) => w.wordId === wordId);
+    if (!word) {
+      throw new ValidationError("Word not found");
+    }
+
+    const playerIndex = word.votedBy.indexOf(trimmedName);
+    if (playerIndex === -1) {
+      throw new ValidationError("Player has not voted for this word");
+    }
+
+    // Remove player from votedBy and decrement votes
+    const newVotedBy = word.votedBy.filter((name) => name !== trimmedName);
+    await client.send(
+      new UpdateCommand({
+        TableName: Resource.Words.name,
+        Key: { roundId, wordId },
+        UpdateExpression: "SET votes = :newVotes, votedBy = :newVotedBy",
+        ConditionExpression: "contains(votedBy, :name)",
+        ExpressionAttributeValues: {
+          ":newVotes": Math.max(0, word.votes - 1),
+          ":newVotedBy": newVotedBy,
+          ":name": trimmedName,
+        },
+      }),
+    );
+  }
+
   export async function listByRound(roundId: string): Promise<Info[]> {
     const result = await client.send(
       new QueryCommand({

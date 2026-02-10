@@ -103,6 +103,18 @@ export default function RoundPage() {
     }
   };
 
+  const handleUnvote = async (wordId: string) => {
+    if (!round || !pin) return;
+    try {
+      await wordsApi.unvote(round.roundId, wordId, playerName, pin);
+      refreshWords();
+    } catch (err) {
+      if (err instanceof Error) {
+        addToast(err.message, "error");
+      }
+    }
+  };
+
   const handleStartGame = async () => {
     if (!round || !pin) return;
     try {
@@ -170,6 +182,7 @@ export default function RoundPage() {
           <WordList
             words={currentWords}
             onVote={handleVote}
+            onUnvote={handleUnvote}
             currentPlayer={playerName}
             disabled={round.status !== "collecting"}
           />
