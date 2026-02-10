@@ -171,8 +171,8 @@ export default function RoundPage() {
       <main className="mx-auto max-w-2xl space-y-6 p-4">
         <ShareCode code={code} />
 
-        {round.roundEndsAt && (
-          <p className="text-center text-sm text-gray-500">
+        {round.roundEndsAt ? (
+          <p className="text-center text-sm text-gray-600">
             Round ends{" "}
             <time dateTime={round.roundEndsAt}>
               {new Date(round.roundEndsAt).toLocaleDateString(undefined, {
@@ -183,6 +183,16 @@ export default function RoundPage() {
                 minute: "2-digit",
               })}
             </time>
+          </p>
+        ) : (
+          <p className="text-center text-sm text-gray-600">
+            Duration:{" "}
+            {round.durationDays >= 1
+              ? `${round.durationDays} day${round.durationDays !== 1 ? "s" : ""}`
+              : round.durationDays * 24 >= 1
+                ? `${Math.round(round.durationDays * 24)}h`
+                : `${Math.round(round.durationDays * 24 * 60)} min`}{" "}
+            after game starts
           </p>
         )}
 

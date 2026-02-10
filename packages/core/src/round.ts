@@ -17,6 +17,7 @@ export namespace Round {
     shareCode: string;
     createdAt: string;
     boardSize: 3 | 4;
+    durationDays: number;
     roundEndsAt: string;
   }
 
@@ -47,7 +48,6 @@ export namespace Round {
 
     const now = new Date();
     const durationDays = input.durationDays ?? 7;
-    const endsAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
     const round: Info = {
       roundId: input.roundId,
@@ -56,7 +56,8 @@ export namespace Round {
       shareCode: generateShareCode(),
       createdAt: now.toISOString(),
       boardSize: input.boardSize ?? 4,
-      roundEndsAt: endsAt.toISOString(),
+      durationDays,
+      roundEndsAt: "",
     };
 
     await client.send(
@@ -101,16 +102,34 @@ export namespace Round {
       throw new ValidationError(`Cannot transition from "${round.status}" to "${status}"`);
     }
 
-    await client.send(
-      new UpdateCommand({
-        TableName: Resource.Rounds.name,
-        Key: { roundId },
-        UpdateExpression: "SET #s = :status",
-        ExpressionAttributeNames: { "#s": "status" },
-        ExpressionAttributeValues: { ":status": status },
-        ConditionExpression: "attribute_exists(roundId)",
-      }),
-    );
+    if (status === "playing") {
+      const now = new Date();
+      const endsAt = new Date(now.getTime() + round.durationDays * 24 * 60 * 60 * 1000);
+      await client.send(
+        new UpdateCommand({
+          TableName: Resource.Rounds.name,
+          Key: { roundId },
+          UpdateExpression: "SET #s = :status, roundEndsAt = :endsAt",
+          ExpressionAttributeNames: { "#s": "status" },
+          ExpressionAttributeValues: {
+            ":status": status,
+            ":endsAt": endsAt.toISOString(),
+          },
+          ConditionExpression: "attribute_exists(roundId)",
+        }),
+      );
+    } else {
+      await client.send(
+        new UpdateCommand({
+          TableName: Resource.Rounds.name,
+          Key: { roundId },
+          UpdateExpression: "SET #s = :status",
+          ExpressionAttributeNames: { "#s": "status" },
+          ExpressionAttributeValues: { ":status": status },
+          ConditionExpression: "attribute_exists(roundId)",
+        }),
+      );
+    }
   }
 
   export async function get(roundId: string): Promise<Info | undefined> {

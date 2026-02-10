@@ -5,6 +5,7 @@ export interface Round {
   shareCode: string;
   createdAt: string;
   boardSize: 3 | 4;
+  durationDays: number;
   roundEndsAt: string;
 }
 
