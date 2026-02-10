@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import BingoBoard from "@/components/BingoBoard";
 import BingoModal from "@/components/BingoModal";
+import RoundEndModal from "@/components/RoundEndModal";
 import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
 import ToastContainer from "@/components/ToastContainer";
@@ -15,6 +16,19 @@ import { useHaptic, usePageTitle, usePolling } from "@/lib/hooks";
 import { useNotifications } from "@/lib/notifications";
 import { clearSession, getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
+
+function formatCountdown(ms: number): string {
+  if (ms <= 0) return "0:00";
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
 
 interface PlayerProgress {
   playerName: string;
@@ -43,7 +57,10 @@ export default function BoardPage() {
   const [playerProgress, setPlayerProgress] = useState<PlayerProgress[]>([]);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showRoundEndModal, setShowRoundEndModal] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const prevBingo = useRef(false);
+  const endingRef = useRef(false);
   const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
   // Redirect if no session
@@ -67,17 +84,26 @@ export default function BoardPage() {
           return;
         }
 
-        if (r.status === "finished") {
-          router.push(`/round/${code}/results`);
-          return;
-        }
 
         // Try to get existing board or create one
         try {
           const b = await boards.get(r.roundId, playerName);
           setBoard(b);
           prevBingo.current = b.hasBingo;
+
+          if (r.status === "finished") {
+            if (b.hasBingo) {
+              router.push(`/round/${code}/results`);
+            } else {
+              setShowRoundEndModal(true);
+            }
+            return;
+          }
         } catch {
+          if (r.status === "finished") {
+            router.push(`/round/${code}/results`);
+            return;
+          }
           // Board doesn't exist — create it
           const newBoard = await boards.create(r.roundId, playerName, pin);
           const b = await boards.get(r.roundId, playerName);
@@ -103,10 +129,44 @@ export default function BoardPage() {
     if (freshRound) {
       setRound(freshRound);
       if (freshRound.status === "finished") {
-        router.push(`/round/${code}/results`);
+        if (prevBingo.current) {
+          router.push(`/round/${code}/results`);
+        } else {
+          setShowRoundEndModal(true);
+        }
       }
     }
   }, [freshRound, code, router]);
+
+  // Countdown timer — ticks every second
+  useEffect(() => {
+    if (!round?.roundEndsAt || round.status === "finished") return;
+    const tick = () => {
+      const ms = new Date(round.roundEndsAt).getTime() - Date.now();
+      setTimeRemaining(Math.max(0, ms));
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [round?.roundEndsAt, round?.status]);
+
+  // Auto-end: when countdown reaches 0 and round is still playing, transition to finished
+  useEffect(() => {
+    if (
+      timeRemaining !== null &&
+      timeRemaining <= 0 &&
+      round?.status === "playing" &&
+      !endingRef.current &&
+      pin &&
+      playerName
+    ) {
+      endingRef.current = true;
+      rounds.updateStatus(round.roundId, "finished", playerName, pin).catch(() => {
+        // Race condition: another player already ended it — polling will pick it up
+        endingRef.current = false;
+      });
+    }
+  }, [timeRemaining, round, pin, playerName]);
 
   // Poll other players' progress
   const fetchProgress = useCallback(async (): Promise<PlayerProgress[]> => {
@@ -201,6 +261,23 @@ export default function BoardPage() {
         onShareCodeClick={() => setShowShareModal(true)}
       />
 
+      {timeRemaining !== null && round?.status === "playing" && (
+        <div className="mx-auto max-w-5xl px-4 pt-2">
+          <div
+            className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${
+              timeRemaining <= 60000
+                ? "bg-red-50 text-red-700"
+                : timeRemaining <= 300000
+                  ? "bg-amber-50 text-amber-700"
+                  : "bg-corpo-50 text-corpo-900"
+            }`}
+          >
+            <span>Time remaining:</span>
+            <span className="font-mono tabular-nums">{formatCountdown(timeRemaining)}</span>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-5xl p-4">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-center">
           <div
@@ -272,6 +349,14 @@ export default function BoardPage() {
           </Button>
         </div>
       </Modal>
+      {showRoundEndModal && (
+        <RoundEndModal
+          onClose={() => {
+            setShowRoundEndModal(false);
+            router.push(`/round/${code}/results`);
+          }}
+        />
+      )}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );

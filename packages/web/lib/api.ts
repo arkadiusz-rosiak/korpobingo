@@ -84,10 +84,10 @@ function qs(params: Record<string, string | undefined>): string {
 
 // --- Rounds ---
 export const rounds = {
-  create: (name: string, boardSize?: 3 | 4) =>
+  create: (name: string, boardSize?: 3 | 4, durationDays?: number) =>
     request<import("./types").Round>(`${ROUNDS_API}`, {
       method: "POST",
-      body: JSON.stringify({ name, boardSize }),
+      body: JSON.stringify({ name, boardSize, durationDays }),
     }),
 
   getByShareCode: (shareCode: string) =>
