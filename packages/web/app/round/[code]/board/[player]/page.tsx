@@ -21,10 +21,14 @@ export default function PlayerBoardPage() {
 
   useEffect(() => {
     rounds.getByShareCode(code).then((r) => {
+      if (r.status === "collecting") {
+        router.push(`/round/${code}`);
+        return;
+      }
       setRoundId(r.roundId);
       setRoundName(r.name);
     });
-  }, [code]);
+  }, [code, router]);
 
   const fetchBoard = useCallback(
     () => (roundId ? boards.get(roundId, playerName) : Promise.reject()),
@@ -32,6 +36,14 @@ export default function PlayerBoardPage() {
   );
 
   const { data: board, error } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
+
+  const roundNotPlaying = error instanceof ApiRequestError && error.code === "ROUND_NOT_PLAYING";
+
+  useEffect(() => {
+    if (roundNotPlaying) {
+      router.push(`/round/${code}`);
+    }
+  }, [roundNotPlaying, code, router]);
 
   const boardNotFound = !board && error instanceof ApiRequestError && error.code === "NOT_FOUND";
 

@@ -26,6 +26,13 @@ export const handler = wrapHandler(async (event) => {
         if (!pinValid) {
           return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
+        const markRound = await Round.get(roundId);
+        if (!markRound || markRound.status === "collecting") {
+          return json(400, {
+            error: "Round is still in collecting phase",
+            code: "ROUND_NOT_PLAYING",
+          });
+        }
         const board = await Board.markCell(roundId, playerName, cellIndex);
         const bingo = Board.checkBingo(board.marked, board.size);
         return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
@@ -45,6 +52,13 @@ export const handler = wrapHandler(async (event) => {
         const pinValid = await Player.verifyPin(roundId, playerName, pin);
         if (!pinValid) {
           return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+        }
+        const unmarkRound = await Round.get(roundId);
+        if (!unmarkRound || unmarkRound.status === "collecting") {
+          return json(400, {
+            error: "Round is still in collecting phase",
+            code: "ROUND_NOT_PLAYING",
+          });
         }
         const board = await Board.unmarkCell(roundId, playerName, cellIndex);
         const bingo = Board.checkBingo(board.marked, board.size);
@@ -90,6 +104,12 @@ export const handler = wrapHandler(async (event) => {
       if (!round) {
         return json(404, { error: "Round not found", code: "NOT_FOUND" });
       }
+      if (round.status === "collecting") {
+        return json(400, {
+          error: "Round is still in collecting phase",
+          code: "ROUND_NOT_PLAYING",
+        });
+      }
 
       const words = await Word.listByVotes(roundId);
       const totalCells = round.boardSize * round.boardSize;
@@ -106,6 +126,13 @@ export const handler = wrapHandler(async (event) => {
     case "GET": {
       const roundId = requireParam(event, "roundId");
       const playerName = requireParam(event, "playerName");
+      const getRound = await Round.get(roundId);
+      if (getRound && getRound.status === "collecting") {
+        return json(409, {
+          error: "Round is still in collecting phase",
+          code: "ROUND_NOT_PLAYING",
+        });
+      }
       const board = await Board.get(roundId, playerName);
       if (!board) return json(404, { error: "Board not found", code: "NOT_FOUND" });
       const bingo = Board.checkBingo(board.marked, board.size);
