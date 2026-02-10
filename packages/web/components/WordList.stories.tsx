@@ -65,6 +65,9 @@ export const Default: Story = {
     onVote: async (wordId: string) => {
       console.log("Voted for:", wordId);
     },
+    onUnvote: async (wordId: string) => {
+      console.log("Unvoted for:", wordId);
+    },
     currentPlayer: "Alice",
     disabled: false,
   },
@@ -74,6 +77,7 @@ export const Empty: Story = {
   args: {
     words: [],
     onVote: async () => {},
+    onUnvote: async () => {},
     currentPlayer: "Alice",
     disabled: false,
   },
@@ -83,6 +87,7 @@ export const Disabled: Story = {
   args: {
     words: sampleWords,
     onVote: async () => {},
+    onUnvote: async () => {},
     currentPlayer: "Alice",
     disabled: true,
   },
