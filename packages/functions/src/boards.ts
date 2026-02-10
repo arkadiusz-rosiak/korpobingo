@@ -35,6 +35,17 @@ export const handler = wrapHandler(async (event) => {
         }
         const board = await Board.markCell(roundId, playerName, cellIndex);
         const bingo = Board.checkBingo(board.marked, board.size);
+        if (bingo.hasBingo) {
+          console.log(
+            JSON.stringify({
+              level: "INFO",
+              event: "BINGO_ACHIEVED",
+              roundId,
+              playerName,
+              lines: bingo.lines.length,
+            }),
+          );
+        }
         return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
       }
 

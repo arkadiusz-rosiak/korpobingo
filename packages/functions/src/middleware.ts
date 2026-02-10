@@ -62,6 +62,25 @@ export function handleError(err: unknown): ApiResult {
   return json(500, { error: "Internal server error", code: "INTERNAL_ERROR" });
 }
 
+function tryParseRoundId(event: ApiEvent): string | undefined {
+  const fromQs = event.queryStringParameters?.roundId;
+  if (fromQs) return fromQs;
+  try {
+    const raw = event.body
+      ? event.isBase64Encoded
+        ? Buffer.from(event.body, "base64").toString()
+        : event.body
+      : undefined;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed?.roundId;
+    }
+  } catch {
+    // Ignore parse errors — body may not be JSON
+  }
+  return undefined;
+}
+
 export function wrapHandler(
   fn: (event: ApiEvent) => Promise<ApiResult>,
 ): (event: ApiEvent) => Promise<ApiResult> {
@@ -70,10 +89,80 @@ export function wrapHandler(
     if (getMethod(event) === "OPTIONS") {
       return json(200, {});
     }
+
+    const startTime = Date.now();
+    const method = getMethod(event);
+    const path = event.rawPath || event.requestContext?.http?.path || "unknown";
+    const roundId = tryParseRoundId(event);
+
+    let result: ApiResult;
+    let isError = false;
+
     try {
-      return await fn(event);
+      result = await fn(event);
     } catch (err) {
-      return handleError(err);
+      isError = true;
+      result = handleError(err);
+
+      const errorLog: Record<string, unknown> = {
+        level: "ERROR",
+        method,
+        path,
+        roundId,
+        errorType: err instanceof Error ? err.name : "Unknown",
+        errorMessage: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        timestamp: new Date().toISOString(),
+      };
+      console.log(JSON.stringify(errorLog));
     }
+
+    const endTime = Date.now();
+    const duration = endTime - startTime;
+    const statusCode =
+      typeof result === "object" && result && "statusCode" in result
+        ? (result as { statusCode: number }).statusCode
+        : 0;
+
+    if (!isError) {
+      console.log(
+        JSON.stringify({
+          level: "INFO",
+          method,
+          path,
+          roundId,
+          statusCode,
+          duration,
+          timestamp: new Date().toISOString(),
+        }),
+      );
+    }
+
+    // CloudWatch Embedded Metric Format
+    console.log(
+      JSON.stringify({
+        _aws: {
+          Timestamp: Date.now(),
+          CloudWatchMetrics: [
+            {
+              Namespace: "KorpoBingo",
+              Dimensions: [["Method", "Path"]],
+              Metrics: [
+                { Name: "RequestCount", Unit: "Count" },
+                { Name: "Duration", Unit: "Milliseconds" },
+                { Name: "ErrorCount", Unit: "Count" },
+              ],
+            },
+          ],
+        },
+        Method: method,
+        Path: path,
+        RequestCount: 1,
+        Duration: duration,
+        ErrorCount: isError ? 1 : 0,
+      }),
+    );
+
+    return result;
   };
 }

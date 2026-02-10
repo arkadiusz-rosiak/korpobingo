@@ -28,6 +28,14 @@ export const handler = wrapHandler(async (event) => {
         playerName: body.playerName as string,
         pin: body.pin as string,
       });
+      console.log(
+        JSON.stringify({
+          level: "INFO",
+          event: "PLAYER_JOINED",
+          roundId: player.roundId,
+          playerName: player.playerName,
+        }),
+      );
       return json(201, player);
     }
     case "GET": {
