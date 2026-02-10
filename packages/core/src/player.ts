@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import { client } from "./dynamo.js";
 import { ValidationError } from "./round.js";
@@ -88,6 +88,15 @@ export namespace Player {
     );
     const item = result.Item;
     return item ? (item as Info) : undefined;
+  }
+
+  export async function remove(roundId: string, playerName: string): Promise<void> {
+    await client.send(
+      new DeleteCommand({
+        TableName: Resource.Players.name,
+        Key: { roundId, playerName },
+      }),
+    );
   }
 
   export async function listByRound(roundId: string): Promise<PublicInfo[]> {

@@ -139,7 +139,7 @@ export default function RoundPage() {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Loading your meeting...</p>
+        <p className="text-gray-500">Loading your meeting...</p>
       </main>
     );
   }
@@ -209,7 +209,7 @@ export default function RoundPage() {
               <li key={p.playerName} className="flex items-center gap-2 py-1 text-sm">
                 <span className="text-gray-700">{p.playerName}</span>
                 {p.playerName === playerName && (
-                  <span className="text-xs text-gray-400">(you)</span>
+                  <span className="text-xs text-gray-500">(you)</span>
                 )}
               </li>
             ))}

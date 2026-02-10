@@ -148,7 +148,7 @@ export default function PinInput({
         </p>
       )}
       {helperText && !error && (
-        <p id={`${id}-helper`} className="text-xs text-gray-400">
+        <p id={`${id}-helper`} className="text-xs text-gray-500">
           {helperText}
         </p>
       )}

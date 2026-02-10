@@ -21,7 +21,7 @@ export default function WordList({
 }: WordListProps) {
   if (words.length === 0) {
     return (
-      <p className="py-8 text-center text-sm text-gray-400">
+      <p className="py-8 text-center text-sm text-gray-500">
         No buzzwords yet. Be the first to add one!
       </p>
     );
@@ -34,7 +34,7 @@ export default function WordList({
         return (
           <li key={word.wordId} className="flex items-center gap-3 rounded-lg bg-white px-3 py-2">
             <span className="flex-1 text-sm text-gray-700">{word.text}</span>
-            <span className="text-xs text-gray-400">by {word.submittedBy}</span>
+            <span className="text-xs text-gray-500">by {word.submittedBy}</span>
             {onDelete && word.submittedBy === currentPlayer && !disabled && (
               <button
                 type="button"

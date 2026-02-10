@@ -67,7 +67,7 @@ export default function JoinPage() {
   if (roundExists === null) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Checking meeting room...</p>
+        <p className="text-gray-500">Checking meeting room...</p>
       </main>
     );
   }
@@ -76,7 +76,7 @@ export default function JoinPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
         <p className="text-lg font-medium text-red-500">Round not found</p>
-        <p className="text-sm text-gray-400">Check the code and try again.</p>
+        <p className="text-sm text-gray-500">Check the code and try again.</p>
         <Button variant="secondary" onClick={() => router.push("/")}>
           Go home
         </Button>

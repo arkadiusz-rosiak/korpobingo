@@ -94,7 +94,7 @@ export default function ResultsPage() {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Tallying the scores...</p>
+        <p className="text-gray-500">Tallying the scores...</p>
       </main>
     );
   }
@@ -134,7 +134,7 @@ export default function ResultsPage() {
           </CardHeader>
           <CardBody className="space-y-3">
             {rankings.length === 0 && (
-              <p className="text-center text-sm text-gray-400">No players found</p>
+              <p className="text-center text-sm text-gray-500">No players found</p>
             )}
             {rankings.map((player, index) => {
               const isWinner = index === 0 && player.bingoCount > 0;

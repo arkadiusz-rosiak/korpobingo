@@ -40,7 +40,7 @@ export default function PlayerList({
             >
               <span className={`text-sm font-medium ${isMe ? "text-corpo-900" : "text-gray-700"}`}>
                 {p.playerName}
-                {isMe && <span className="ml-1 text-xs text-gray-400">(you)</span>}
+                {isMe && <span className="ml-1 text-xs text-gray-500">(you)</span>}
               </span>
               <div className="ml-auto flex items-center gap-2">
                 {p.hasBingo && (
@@ -56,7 +56,7 @@ export default function PlayerList({
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="w-8 text-right text-xs text-gray-400">
+                <span className="w-8 text-right text-xs text-gray-500">
                   {p.markedCount}/{p.totalCells}
                 </span>
               </div>

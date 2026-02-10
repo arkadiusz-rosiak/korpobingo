@@ -45,11 +45,11 @@ export default function PlayerBoardPage() {
               onClick={() => router.back()}
               className="text-sm text-corpo-900 hover:underline"
             >
-              Wróć
+              Back
             </button>
           </div>
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-            <p className="text-gray-500">Gracz nie otworzył jeszcze swojej planszy.</p>
+            <p className="text-gray-500">This player hasn&apos;t opened their board yet.</p>
           </div>
         </main>
       </div>
@@ -59,7 +59,7 @@ export default function PlayerBoardPage() {
   if (!board) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Loading board...</p>
+        <p className="text-gray-500">Loading board...</p>
       </main>
     );
   }

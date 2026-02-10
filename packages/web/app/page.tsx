@@ -36,7 +36,7 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-xs text-gray-400">or join existing</span>
+            <span className="text-xs text-gray-500">or join existing</span>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
 
@@ -59,7 +59,7 @@ export default function Home() {
           {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500">
           Per company policy, fun is neither endorsed nor prohibited.
         </p>
       </div>

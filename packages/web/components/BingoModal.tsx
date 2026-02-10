@@ -164,7 +164,7 @@ export default function BingoModal({ onClose, bingoCount = 1 }: BingoModalProps)
         )}
 
         {isFirstBingo && !videoFailed && (
-          <p className="mb-4 text-xs text-gray-400">
+          <p className="mb-4 text-xs text-gray-500">
             🔇 Audio disabled for meeting safety. Unmute at your own risk.
           </p>
         )}

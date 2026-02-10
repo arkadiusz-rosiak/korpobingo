@@ -66,6 +66,7 @@ export const handler = wrapHandler(async (event) => {
           return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
         }
         await Board.remove(roundId, playerName);
+        await Player.remove(roundId, playerName);
         return json(200, { ok: true });
       }
 

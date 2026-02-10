@@ -42,7 +42,7 @@ export default function Input({
         </p>
       )}
       {helperText && !error && (
-        <p id={`${inputId}-helper`} className="text-xs text-gray-400">
+        <p id={`${inputId}-helper`} className="text-xs text-gray-500">
           {helperText}
         </p>
       )}

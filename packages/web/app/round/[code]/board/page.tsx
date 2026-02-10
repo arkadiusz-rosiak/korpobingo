@@ -181,7 +181,7 @@ export default function BoardPage() {
   if (loading || !board) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Preparing your board...</p>
+        <p className="text-gray-500">Preparing your board...</p>
       </main>
     );
   }
@@ -209,7 +209,7 @@ export default function BoardPage() {
             />
             <div className="mt-4 flex justify-center">
               <Button variant="ghost" size="sm" onClick={() => setShowLeaveDialog(true)}>
-                Opuść rundę
+                Leave round
               </Button>
             </div>
           </div>
@@ -246,22 +246,22 @@ export default function BoardPage() {
       )}
       <Modal open={showShareModal} onClose={() => setShowShareModal(false)}>
         <div className="flex flex-col items-center">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Zaproś graczy</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Invite players</h2>
           <ShareCode code={code} />
         </div>
       </Modal>
       <Modal open={showLeaveDialog} onClose={() => setShowLeaveDialog(false)}>
-        <h2 className="text-lg font-semibold text-gray-900">Opuść rundę?</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Leave round?</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Twoja plansza zostanie usunięta. Po ponownym dołączeniu otrzymasz nową planszę z losowym
-          układem słów.
+          Your board will be deleted. If you rejoin, you&apos;ll get a new board with a random word
+          layout.
         </p>
         <div className="mt-4 flex gap-3 justify-end">
           <Button variant="ghost" size="sm" onClick={() => setShowLeaveDialog(false)}>
-            Anuluj
+            Cancel
           </Button>
           <Button variant="danger" size="sm" onClick={handleLeaveRound}>
-            Opuść rundę
+            Leave round
           </Button>
         </div>
       </Modal>

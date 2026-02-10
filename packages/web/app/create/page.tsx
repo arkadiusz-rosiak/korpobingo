@@ -58,7 +58,7 @@ export default function CreatePage() {
                   }`}
                 >
                   {size}x{size}
-                  <span className="block text-xs text-gray-400">{size * size} words needed</span>
+                  <span className="block text-xs text-gray-500">{size * size} words needed</span>
                 </button>
               ))}
             </div>
