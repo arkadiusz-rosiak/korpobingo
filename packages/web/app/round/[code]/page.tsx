@@ -169,6 +169,21 @@ export default function RoundPage() {
       <main className="mx-auto max-w-2xl space-y-6 p-4">
         <ShareCode code={code} />
 
+        {round.roundEndsAt && (
+          <p className="text-center text-sm text-gray-500">
+            Round ends{" "}
+            <time dateTime={round.roundEndsAt}>
+              {new Date(round.roundEndsAt).toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </time>
+          </p>
+        )}
+
         <div className="card">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-semibold">
