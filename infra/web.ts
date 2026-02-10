@@ -2,7 +2,14 @@ import { api } from "./api";
 
 export const web = new sst.aws.Nextjs("Web", {
   path: "packages/web",
-  domain: $app.stage === "production" ? { name: "korpobingo.rosiak.it", dns: false } : undefined,
+  domain:
+    $app.stage === "production"
+      ? {
+          name: "korpobingo.rosiak.it",
+          dns: false,
+          cert: "arn:aws:acm:us-east-1:936197736945:certificate/3cb0b808-bfe2-4f60-b87f-88db26f72b70",
+        }
+      : undefined,
   environment: {
     NEXT_PUBLIC_ROUNDS_API_URL: $interpolate`${api.url}/rounds`,
     NEXT_PUBLIC_WORDS_API_URL: $interpolate`${api.url}/words`,
