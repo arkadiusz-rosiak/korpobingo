@@ -60,6 +60,11 @@ export default function BoardPage() {
         const r = await rounds.getByShareCode(code);
         setRound(r);
 
+        if (r.status === "collecting") {
+          router.push(`/round/${code}`);
+          return;
+        }
+
         if (r.status === "finished") {
           router.push(`/round/${code}/results`);
           return;
