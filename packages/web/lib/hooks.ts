@@ -2,6 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+const BASE_TITLE = "KorpoBingo";
+
+export function usePageTitle(title?: string | null) {
+  useEffect(() => {
+    document.title = title ? `${title} - ${BASE_TITLE}` : BASE_TITLE;
+  }, [title]);
+}
+
 export function usePolling<T>(
   fetcher: () => Promise<T>,
   intervalMs: number,

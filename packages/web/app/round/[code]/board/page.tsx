@@ -11,7 +11,7 @@ import Button from "@/components/ui/Button";
 import ShareCode from "@/components/ShareCode";
 import Modal from "@/components/ui/Modal";
 import { boards, players as playersApi, rounds } from "@/lib/api";
-import { useHaptic, usePolling } from "@/lib/hooks";
+import { useHaptic, usePageTitle, usePolling } from "@/lib/hooks";
 import { useNotifications } from "@/lib/notifications";
 import { clearSession, getPinForSession, getSession } from "@/lib/session";
 import type { BoardWithBingo, Player, Round } from "@/lib/types";
@@ -28,6 +28,8 @@ export default function BoardPage() {
   const router = useRouter();
   const code = (params.code as string).toUpperCase();
   const haptic = useHaptic();
+
+  usePageTitle("Board");
 
   const session = typeof window !== "undefined" ? getSession(code) : null;
   const playerName = session?.playerName ?? "";
