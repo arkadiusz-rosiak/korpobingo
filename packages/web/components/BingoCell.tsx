@@ -52,7 +52,7 @@ const BingoCell = forwardRef<HTMLButtonElement, BingoCellProps>(function BingoCe
         } ${animClass} ${readOnly ? "cursor-default" : "cursor-pointer active:scale-95"}`}
         style={{ fontSize: "clamp(0.7rem, 2.5vw, 0.9rem)" }}
       >
-        <span className="line-clamp-3 break-all leading-tight">{text}</span>
+        <span className="line-clamp-3 break-words leading-tight">{text}</span>
         {marked && (
           <span
             className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-corpo-900 text-[10px] text-white"
