@@ -5,7 +5,13 @@ const meta: Meta<typeof Input> = {
   title: "UI/Input",
   component: Input,
   parameters: { layout: "centered" },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div style={{ width: 360 }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -24,7 +30,11 @@ export const WithError: Story = {
 };
 
 export const WithHelperText: Story = {
-  args: { label: "Share code", placeholder: "ABC123", helperText: "6-character code from your organizer" },
+  args: {
+    label: "Share code",
+    placeholder: "ABC123",
+    helperText: "6-character code from your organizer",
+  },
 };
 
 export const Disabled: Story = {

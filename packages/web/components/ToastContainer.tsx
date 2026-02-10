@@ -56,7 +56,11 @@ interface ToastContainerProps {
   duration?: number;
 }
 
-export default function ToastContainer({ toasts, onDismiss, duration = 4000 }: ToastContainerProps) {
+export default function ToastContainer({
+  toasts,
+  onDismiss,
+  duration = 4000,
+}: ToastContainerProps) {
   if (toasts.length === 0) return null;
 
   return (

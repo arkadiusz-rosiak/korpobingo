@@ -31,8 +31,7 @@ export default function PlayerBoardPage() {
 
   const { data: board, error } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
 
-  const boardNotFound =
-    !board && error instanceof ApiRequestError && error.code === "NOT_FOUND";
+  const boardNotFound = !board && error instanceof ApiRequestError && error.code === "NOT_FOUND";
 
   if (boardNotFound) {
     return (
@@ -50,9 +49,7 @@ export default function PlayerBoardPage() {
             </button>
           </div>
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-            <p className="text-gray-500">
-              Gracz nie otworzył jeszcze swojej planszy.
-            </p>
+            <p className="text-gray-500">Gracz nie otworzył jeszcze swojej planszy.</p>
           </div>
         </main>
       </div>

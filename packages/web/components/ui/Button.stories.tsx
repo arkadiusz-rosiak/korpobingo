@@ -21,8 +21,12 @@ export const Ghost: Story = { args: { children: "Skip", variant: "ghost" } };
 export const Danger: Story = { args: { children: "End round", variant: "danger" } };
 export const Small: Story = { args: { children: "Vote", variant: "primary", size: "sm" } };
 export const Large: Story = { args: { children: "Create Round", variant: "primary", size: "lg" } };
-export const Loading: Story = { args: { children: "Submitting...", variant: "primary", loading: true } };
-export const Disabled: Story = { args: { children: "Disabled", variant: "primary", disabled: true } };
+export const Loading: Story = {
+  args: { children: "Submitting...", variant: "primary", loading: true },
+};
+export const Disabled: Story = {
+  args: { children: "Disabled", variant: "primary", disabled: true },
+};
 
 export const AllVariants: Story = {
   render: () => (

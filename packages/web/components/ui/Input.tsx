@@ -8,7 +8,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   helperText?: string;
 }
 
-export default function Input({ label, error, helperText, className = "", id, ...props }: InputProps) {
+export default function Input({
+  label,
+  error,
+  helperText,
+  className = "",
+  id,
+  ...props
+}: InputProps) {
   const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
   return (

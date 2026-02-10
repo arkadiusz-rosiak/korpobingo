@@ -133,9 +133,7 @@ export default function ShareCode({ code }: ShareCodeProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="text-sm font-medium text-gray-500">
-        Share this code with your team
-      </p>
+      <p className="text-sm font-medium text-gray-500">Share this code with your team</p>
 
       <div
         className="select-all rounded-2xl bg-corpo-900 px-8 py-5 font-mono text-4xl font-bold tracking-[0.3em] text-white sm:text-5xl"
@@ -184,12 +182,7 @@ export default function ShareCode({ code }: ShareCodeProps) {
         </Button>
 
         {canNativeShare && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNativeShare}
-            aria-label="Share round"
-          >
+          <Button variant="ghost" size="sm" onClick={handleNativeShare} aria-label="Share round">
             <ShareIcon className="mr-1.5 h-4 w-4" />
             Share
           </Button>

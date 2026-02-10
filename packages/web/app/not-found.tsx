@@ -9,8 +9,7 @@ export default function NotFound() {
           This resource is not available in the current quarter
         </h1>
         <p className="text-gray-500">
-          It may have been deprioritized, moved to the backlog, or was never
-          approved by leadership.
+          It may have been deprioritized, moved to the backlog, or was never approved by leadership.
         </p>
         <Link
           href="/"

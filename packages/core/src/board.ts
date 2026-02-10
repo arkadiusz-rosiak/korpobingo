@@ -1,4 +1,10 @@
-import { DeleteCommand, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DeleteCommand,
+  GetCommand,
+  PutCommand,
+  QueryCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import { client } from "./dynamo.js";
 import { ValidationError } from "./round.js";

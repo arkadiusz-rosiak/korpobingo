@@ -67,7 +67,6 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
       lastError = error;
       if (attempt < MAX_RETRIES) {
         await new Promise((r) => setTimeout(r, retryDelay(attempt)));
-        continue;
       }
     }
   }
@@ -121,6 +120,12 @@ export const words = {
     request<{ ok: boolean }>(`${WORDS_API}`, {
       method: "POST",
       body: JSON.stringify({ action: "unvote", roundId, wordId, playerName, pin }),
+    }),
+
+  remove: (roundId: string, wordId: string, playerName: string, pin: string) =>
+    request<{ ok: boolean }>(`${WORDS_API}`, {
+      method: "POST",
+      body: JSON.stringify({ action: "delete", roundId, wordId, playerName, pin }),
     }),
 
   list: (roundId: string, sortBy?: "votes") =>

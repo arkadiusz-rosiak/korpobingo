@@ -78,9 +78,7 @@ export default function ResultsPage() {
 
         const playerList = await playersApi.list(r.roundId);
         const boardResults = await Promise.all(
-          playerList.map((p) =>
-            boards.get(r.roundId, p.playerName).catch(() => null),
-          ),
+          playerList.map((p) => boards.get(r.roundId, p.playerName).catch(() => null)),
         );
 
         setRankings(computeRankings(playerList, boardResults));
@@ -136,9 +134,7 @@ export default function ResultsPage() {
           </CardHeader>
           <CardBody className="space-y-3">
             {rankings.length === 0 && (
-              <p className="text-center text-sm text-gray-400">
-                No players found
-              </p>
+              <p className="text-center text-sm text-gray-400">No players found</p>
             )}
             {rankings.map((player, index) => {
               const isWinner = index === 0 && player.bingoCount > 0;
@@ -148,23 +144,17 @@ export default function ResultsPage() {
                   type="button"
                   onClick={() =>
                     setSelectedPlayer(
-                      selectedPlayer === player.playerName
-                        ? null
-                        : player.playerName,
+                      selectedPlayer === player.playerName ? null : player.playerName,
                     )
                   }
                   className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-gray-50 ${
-                    selectedPlayer === player.playerName
-                      ? "bg-corpo-50 ring-2 ring-corpo-200"
-                      : ""
+                    selectedPlayer === player.playerName ? "bg-corpo-50 ring-2 ring-corpo-200" : ""
                   } ${isWinner ? "bg-yellow-50" : ""}`}
                 >
                   {/* Position */}
                   <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-bold text-gray-600">
                     {isWinner ? (
-                      <span className="inline-block animate-crown-shimmer text-lg">
-                        👑
-                      </span>
+                      <span className="inline-block animate-crown-shimmer text-lg">👑</span>
                     ) : (
                       index + 1
                     )}
@@ -176,14 +166,11 @@ export default function ResultsPage() {
                       <span className="truncate font-medium text-gray-900">
                         {player.playerName}
                       </span>
-                      {isWinner && (
-                        <Badge variant="warning">Winner</Badge>
-                      )}
+                      {isWinner && <Badge variant="warning">Winner</Badge>}
                     </div>
                     <div className="mt-0.5 flex items-center gap-3 text-xs text-gray-500">
                       <span>
-                        {player.bingoCount}{" "}
-                        {player.bingoCount === 1 ? "bingo" : "bingos"}
+                        {player.bingoCount} {player.bingoCount === 1 ? "bingo" : "bingos"}
                       </span>
                       <span>
                         {player.markedCount}/{player.totalCells} marked
@@ -192,9 +179,7 @@ export default function ResultsPage() {
                   </div>
 
                   {/* Bingo count badge */}
-                  {player.bingoCount > 0 && (
-                    <Badge variant="success">{player.bingoCount}</Badge>
-                  )}
+                  {player.bingoCount > 0 && <Badge variant="success">{player.bingoCount}</Badge>}
                 </button>
               );
             })}
@@ -206,9 +191,7 @@ export default function ResultsPage() {
           <Card className="animate-fade-in">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">
-                  {selectedBoard.playerName}&apos;s board
-                </h3>
+                <h3 className="font-semibold">{selectedBoard.playerName}&apos;s board</h3>
                 <button
                   type="button"
                   onClick={() => setSelectedPlayer(null)}
@@ -233,11 +216,7 @@ export default function ResultsPage() {
 
         {/* New round CTA */}
         <div className="pt-2">
-          <Button
-            variant="primary"
-            className="w-full"
-            onClick={() => router.push("/create")}
-          >
+          <Button variant="primary" className="w-full" onClick={() => router.push("/create")}>
             New round
           </Button>
         </div>

@@ -1,12 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Card, CardHeader, CardBody, CardFooter } from "./Card";
 import Button from "./Button";
+import { Card, CardBody, CardFooter, CardHeader } from "./Card";
 
 const meta: Meta<typeof Card> = {
   title: "UI/Card",
   component: Card,
   parameters: { layout: "centered" },
-  decorators: [(Story) => <div style={{ width: 400 }}><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div style={{ width: 400 }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -32,7 +38,9 @@ export const WithHeaderAndFooter: Story = {
         <p className="text-gray-600">Configure your bingo round before starting the game.</p>
       </CardBody>
       <CardFooter>
-        <Button variant="primary" size="sm">Save</Button>
+        <Button variant="primary" size="sm">
+          Save
+        </Button>
       </CardFooter>
     </Card>
   ),

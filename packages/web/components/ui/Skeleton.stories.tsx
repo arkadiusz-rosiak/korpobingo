@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Skeleton, SkeletonText, SkeletonBoard } from "./Skeleton";
+import { Skeleton, SkeletonBoard, SkeletonText } from "./Skeleton";
 
 const meta: Meta<typeof Skeleton> = {
   title: "UI/Skeleton",

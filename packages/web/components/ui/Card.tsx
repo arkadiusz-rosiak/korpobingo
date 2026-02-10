@@ -37,7 +37,5 @@ export function CardBody({ children, className = "" }: CardBodyProps) {
 }
 
 export function CardFooter({ children, className = "" }: CardFooterProps) {
-  return (
-    <div className={`border-t border-gray-100 px-6 py-4 ${className}`}>{children}</div>
-  );
+  return <div className={`border-t border-gray-100 px-6 py-4 ${className}`}>{children}</div>;
 }

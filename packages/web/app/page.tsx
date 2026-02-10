@@ -52,11 +52,7 @@ export default function Home() {
               maxLength={6}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-center font-mono text-lg tracking-[0.2em] text-gray-900 transition-colors placeholder:text-gray-400 focus:border-corpo-500 focus:outline-none focus:ring-2 focus:ring-corpo-500/20"
             />
-            <Button
-              type="submit"
-              variant="secondary"
-              disabled={code.trim().length !== 6}
-            >
+            <Button type="submit" variant="secondary" disabled={code.trim().length !== 6}>
               Join
             </Button>
           </form>

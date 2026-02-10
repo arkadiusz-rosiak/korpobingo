@@ -22,8 +22,8 @@ export default function ErrorPage({
           Something went wrong. Please circle back later.
         </h1>
         <p className="text-gray-500">
-          Our team has been notified and is aligning on next steps. We
-          appreciate your patience as we work to resolve this action item.
+          Our team has been notified and is aligning on next steps. We appreciate your patience as
+          we work to resolve this action item.
         </p>
         <Button onClick={reset}>Try again</Button>
       </div>
