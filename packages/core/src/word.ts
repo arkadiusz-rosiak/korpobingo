@@ -1,4 +1,4 @@
-import { PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import { client } from "./dynamo.js";
 import { ValidationError } from "./round.js";
@@ -88,6 +88,23 @@ export namespace Word {
       }),
     );
     return (result.Items ?? []) as Info[];
+  }
+
+  export async function remove(roundId: string, wordId: string, submittedBy: string): Promise<void> {
+    const words = await listByRound(roundId);
+    const word = words.find((w) => w.wordId === wordId);
+    if (!word) {
+      throw new ValidationError("Word not found");
+    }
+    if (word.submittedBy !== submittedBy) {
+      throw new ValidationError("Only the author can delete this word");
+    }
+    await client.send(
+      new DeleteCommand({
+        TableName: Resource.Words.name,
+        Key: { roundId, wordId },
+      }),
+    );
   }
 
   export async function listByVotes(roundId: string): Promise<Info[]> {

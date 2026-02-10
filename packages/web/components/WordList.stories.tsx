@@ -59,12 +59,17 @@ const sampleWords: Word[] = [
   },
 ];
 
+const deleteAction = async (wordId: string) => {
+  console.log("Delete:", wordId);
+};
+
 export const Default: Story = {
   args: {
     words: sampleWords,
     onVote: async (wordId: string) => {
       console.log("Voted for:", wordId);
     },
+    onDelete: deleteAction,
     currentPlayer: "Alice",
     disabled: false,
   },
@@ -74,6 +79,7 @@ export const Empty: Story = {
   args: {
     words: [],
     onVote: async () => {},
+    onDelete: deleteAction,
     currentPlayer: "Alice",
     disabled: false,
   },
@@ -83,7 +89,19 @@ export const Disabled: Story = {
   args: {
     words: sampleWords,
     onVote: async () => {},
+    onDelete: deleteAction,
     currentPlayer: "Alice",
     disabled: true,
+  },
+};
+
+export const WithDeleteButtons: Story = {
+  name: "Author with delete buttons",
+  args: {
+    words: sampleWords,
+    onVote: async () => {},
+    onDelete: deleteAction,
+    currentPlayer: "Alice",
+    disabled: false,
   },
 };

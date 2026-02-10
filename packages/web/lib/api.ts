@@ -117,6 +117,12 @@ export const words = {
       body: JSON.stringify({ action: "vote", roundId, wordId, playerName, pin }),
     }),
 
+  remove: (roundId: string, wordId: string, playerName: string, pin: string) =>
+    request<{ ok: boolean }>(`${WORDS_API}`, {
+      method: "POST",
+      body: JSON.stringify({ action: "delete", roundId, wordId, playerName, pin }),
+    }),
+
   list: (roundId: string, sortBy?: "votes") =>
     request<import("./types").Word[]>(`${WORDS_API}${qs({ roundId, sortBy })}`),
 };

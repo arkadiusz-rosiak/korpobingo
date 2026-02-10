@@ -27,6 +27,24 @@ export const handler = wrapHandler(async (event) => {
         await Word.vote(roundId, wordId, playerName);
         return json(200, { ok: true });
       }
+      if (body.action === "delete") {
+        const roundId = body.roundId as string;
+        const wordId = body.wordId as string;
+        const playerName = body.playerName as string;
+        const pin = body.pin as string;
+        if (!roundId || !wordId || !playerName || !pin) {
+          return json(400, {
+            error: "roundId, wordId, playerName, and pin are required",
+            code: "VALIDATION_ERROR",
+          });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+        }
+        await Word.remove(roundId, wordId, playerName);
+        return json(200, { ok: true });
+      }
       const roundId = body.roundId as string;
       const submittedBy = body.submittedBy as string;
       const pin = body.pin as string;

@@ -91,6 +91,13 @@ export default function RoundPage() {
     addToast("Word added!", "success");
   };
 
+  const handleDelete = async (wordId: string) => {
+    if (!round || !pin) return;
+    await wordsApi.remove(round.roundId, wordId, playerName, pin);
+    refreshWords();
+    addToast("Word deleted", "success");
+  };
+
   const handleVote = async (wordId: string) => {
     if (!round || !pin) return;
     try {
@@ -170,6 +177,7 @@ export default function RoundPage() {
           <WordList
             words={currentWords}
             onVote={handleVote}
+            onDelete={handleDelete}
             currentPlayer={playerName}
             disabled={round.status !== "collecting"}
           />
