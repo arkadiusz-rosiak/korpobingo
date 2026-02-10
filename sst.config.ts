@@ -21,6 +21,7 @@ export default $config({
     const storage = await import("./infra/storage");
     const api = await import("./infra/api");
     const { web } = await import("./infra/web");
+    await import("./infra/monitoring");
 
     return {
       RoundsTable: storage.roundsTable.name,

@@ -33,6 +33,16 @@ export const handler = wrapHandler(async (event) => {
 
         await Round.updateStatus(roundId, status);
 
+        if (status === "playing") {
+          console.log(
+            JSON.stringify({ level: "INFO", event: "GAME_STARTED", roundId, playerName }),
+          );
+        } else if (status === "finished") {
+          console.log(
+            JSON.stringify({ level: "INFO", event: "ROUND_FINISHED", roundId, playerName }),
+          );
+        }
+
         // When starting the game, create boards for all registered players
         if (status === "playing") {
           const players = await Player.listByRound(roundId);
@@ -60,6 +70,15 @@ export const handler = wrapHandler(async (event) => {
         boardSize: body.boardSize as 3 | 4 | undefined,
         durationDays: body.durationDays as number | undefined,
       });
+      console.log(
+        JSON.stringify({
+          level: "INFO",
+          event: "ROUND_CREATED",
+          roundId: round.roundId,
+          name: round.name,
+          boardSize: round.boardSize,
+        }),
+      );
       return json(201, round);
     }
     case "GET": {

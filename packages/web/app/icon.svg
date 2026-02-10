@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a237e"/>
+      <stop offset="100%" stop-color="#0d1442"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="url(#bg)"/>
+  <!-- Gold accent row -->
+  <rect x="40" y="200" width="432" height="64" rx="8" fill="#ffd700" opacity="0.9"/>
+  <!-- BINGO text on gold row -->
+  <text x="256" y="245" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="40" fill="#1a237e" letter-spacing="6">BINGO</text>
+  <!-- Large B letter -->
+  <text x="256" y="340" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="280" fill="white" opacity="0.15">B</text>
+  <!-- Grid lines (subtle) -->
+  <g stroke="white" stroke-opacity="0.1" stroke-width="2">
+    <line x1="40" y1="140" x2="472" y2="140"/>
+    <line x1="40" y1="264" x2="472" y2="264"/>
+    <line x1="40" y1="340" x2="472" y2="340"/>
+    <line x1="40" y1="416" x2="472" y2="416"/>
+    <line x1="127" y1="80" x2="127" y2="460"/>
+    <line x1="214" y1="80" x2="214" y2="460"/>
+    <line x1="300" y1="80" x2="300" y2="460"/>
+    <line x1="386" y1="80" x2="386" y2="460"/>
+  </g>
+  <!-- Outer border -->
+  <rect x="40" y="80" width="432" height="380" rx="8" fill="none" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+</svg>

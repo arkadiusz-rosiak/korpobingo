@@ -15,5 +15,6 @@ export const web = new sst.aws.Nextjs("Web", {
     NEXT_PUBLIC_WORDS_API_URL: $interpolate`${api.url}/words`,
     NEXT_PUBLIC_PLAYERS_API_URL: $interpolate`${api.url}/players`,
     NEXT_PUBLIC_BOARDS_API_URL: $interpolate`${api.url}/boards`,
+    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || "dev",
   },
 });

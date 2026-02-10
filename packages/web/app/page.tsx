@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui";
+import { usePageTitle } from "@/lib/hooks";
 
 export default function Home() {
+  usePageTitle();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");

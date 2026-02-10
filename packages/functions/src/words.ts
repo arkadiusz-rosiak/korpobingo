@@ -82,6 +82,16 @@ export const handler = wrapHandler(async (event) => {
         text: body.text as string,
         submittedBy,
       });
+      console.log(
+        JSON.stringify({
+          level: "INFO",
+          event: "WORDS_SUBMITTED",
+          roundId,
+          submittedBy,
+          wordId: word.wordId,
+          text: word.text,
+        }),
+      );
       return json(201, word);
     }
     case "GET": {

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import BingoBoard from "@/components/BingoBoard";
 import Header from "@/components/Header";
 import { ApiRequestError, boards, rounds } from "@/lib/api";
-import { usePolling } from "@/lib/hooks";
+import { usePageTitle, usePolling } from "@/lib/hooks";
 import type { BoardWithBingo } from "@/lib/types";
 
 export default function PlayerBoardPage() {
@@ -14,15 +14,21 @@ export default function PlayerBoardPage() {
   const code = (params.code as string).toUpperCase();
   const playerName = decodeURIComponent(params.player as string);
 
+  usePageTitle(`${playerName}'s Board`);
+
   const [roundId, setRoundId] = useState<string | null>(null);
   const [roundName, setRoundName] = useState("");
 
   useEffect(() => {
     rounds.getByShareCode(code).then((r) => {
+      if (r.status === "collecting") {
+        router.push(`/round/${code}`);
+        return;
+      }
       setRoundId(r.roundId);
       setRoundName(r.name);
     });
-  }, [code]);
+  }, [code, router]);
 
   const fetchBoard = useCallback(
     () => (roundId ? boards.get(roundId, playerName) : Promise.reject()),
@@ -30,6 +36,14 @@ export default function PlayerBoardPage() {
   );
 
   const { data: board, error } = usePolling<BoardWithBingo>(fetchBoard, 4000, !!roundId);
+
+  const roundNotPlaying = error instanceof ApiRequestError && error.code === "ROUND_NOT_PLAYING";
+
+  useEffect(() => {
+    if (roundNotPlaying) {
+      router.push(`/round/${code}`);
+    }
+  }, [roundNotPlaying, code, router]);
 
   const boardNotFound = !board && error instanceof ApiRequestError && error.code === "NOT_FOUND";
 
