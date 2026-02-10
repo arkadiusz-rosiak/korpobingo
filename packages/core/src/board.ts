@@ -189,4 +189,41 @@ export namespace Board {
     }
     return updated;
   }
+
+  export async function unmarkCell(
+    roundId: string,
+    playerName: string,
+    cellIndex: number,
+  ): Promise<Info> {
+    if (cellIndex < 0) {
+      throw new ValidationError("Cell index must be non-negative");
+    }
+
+    const board = await get(roundId, playerName);
+    if (!board) {
+      throw new ValidationError("Board not found");
+    }
+
+    if (cellIndex >= board.marked.length) {
+      throw new ValidationError(
+        `Cell index ${cellIndex} out of bounds (board has ${board.marked.length} cells)`,
+      );
+    }
+
+    await client.send(
+      new UpdateCommand({
+        TableName: Resource.Boards.name,
+        Key: { roundId, playerName },
+        UpdateExpression: `SET marked[${cellIndex}] = :val`,
+        ExpressionAttributeValues: { ":val": false },
+        ConditionExpression: "attribute_exists(roundId)",
+      }),
+    );
+
+    const updated = await get(roundId, playerName);
+    if (!updated) {
+      throw new ValidationError("Board not found after update");
+    }
+    return updated;
+  }
 }

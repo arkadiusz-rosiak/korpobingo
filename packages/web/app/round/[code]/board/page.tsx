@@ -128,17 +128,20 @@ export default function BoardPage() {
   }, [progress, notifyPlayerChanges]);
 
   const handleToggleCell = async (index: number) => {
-    if (!round || !board || board.marked[index] || !pin) return;
+    if (!round || !board || !pin) return;
 
+    const wasMarked = board.marked[index];
     haptic.tap();
 
     // Optimistic update
     const newMarked = [...board.marked];
-    newMarked[index] = true;
+    newMarked[index] = !wasMarked;
     setBoard({ ...board, marked: newMarked });
 
     try {
-      const updated = await boards.mark(round.roundId, playerName, index, pin);
+      const updated = wasMarked
+        ? await boards.unmark(round.roundId, playerName, index, pin)
+        : await boards.mark(round.roundId, playerName, index, pin);
       setBoard(updated);
 
       // Check if bingo just happened
@@ -146,6 +149,12 @@ export default function BoardPage() {
         prevBingo.current = true;
         setBingoCount((c) => c + 1);
         setShowBingoModal(true);
+      }
+
+      // Check if bingo was lost after unmarking
+      if (!updated.hasBingo && prevBingo.current) {
+        prevBingo.current = false;
+        setShowBingoModal(false);
       }
     } catch {
       // Revert optimistic update

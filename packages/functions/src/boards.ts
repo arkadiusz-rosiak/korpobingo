@@ -31,6 +31,26 @@ export const handler = wrapHandler(async (event) => {
         return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
       }
 
+      if (body.action === "unmark") {
+        const roundId = body.roundId as string;
+        const playerName = body.playerName as string;
+        const cellIndex = body.cellIndex as number;
+        const pin = body.pin as string;
+        if (!roundId || !playerName || cellIndex === undefined || !pin) {
+          return json(400, {
+            error: "roundId, playerName, cellIndex, and pin are required",
+            code: "VALIDATION_ERROR",
+          });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+        }
+        const board = await Board.unmarkCell(roundId, playerName, cellIndex);
+        const bingo = Board.checkBingo(board.marked, board.size);
+        return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
+      }
+
       // Create board from top-voted words
       const roundId = body.roundId as string;
       const playerName = body.playerName as string;
