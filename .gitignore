@@ -20,6 +20,10 @@ node_modules
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+sst-env.d.ts
+
+# logs
+*.log
 
 # misc
 .DS_Store
