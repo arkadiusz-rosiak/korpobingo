@@ -31,6 +31,24 @@ export const handler = wrapHandler(async (event) => {
         return json(200, { ...board, hasBingo: bingo.hasBingo, bingoLines: bingo.lines });
       }
 
+      if (body.action === "leave") {
+        const roundId = body.roundId as string;
+        const playerName = body.playerName as string;
+        const pin = body.pin as string;
+        if (!roundId || !playerName || !pin) {
+          return json(400, {
+            error: "roundId, playerName, and pin are required",
+            code: "VALIDATION_ERROR",
+          });
+        }
+        const pinValid = await Player.verifyPin(roundId, playerName, pin);
+        if (!pinValid) {
+          return json(401, { error: "Invalid PIN", code: "INVALID_PIN" });
+        }
+        await Board.remove(roundId, playerName);
+        return json(200, { ok: true });
+      }
+
       // Create board from top-voted words
       const roundId = body.roundId as string;
       const playerName = body.playerName as string;

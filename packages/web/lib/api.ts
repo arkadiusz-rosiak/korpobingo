@@ -155,6 +155,12 @@ export const boards = {
       method: "POST",
       body: JSON.stringify({ action: "mark", roundId, playerName, cellIndex, pin }),
     }),
+
+  leave: (roundId: string, playerName: string, pin: string) =>
+    request<{ ok: boolean }>(`${BOARDS_API}`, {
+      method: "POST",
+      body: JSON.stringify({ action: "leave", roundId, playerName, pin }),
+    }),
 };
 
 export { ApiRequestError };
