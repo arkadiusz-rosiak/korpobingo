@@ -87,9 +87,9 @@ npm run storybook -w packages/web     # Runs on port 6006
 
 The project uses two SST stages:
 
-| Stage        | Command                                                  |
-|--------------|----------------------------------------------------------|
-| **dev**      | `AWS_PROFILE=korpobingo npx sst deploy`                 |
+| Stage          | Command                                                    |
+| -------------- | ---------------------------------------------------------- |
+| **dev**        | `AWS_PROFILE=korpobingo npx sst deploy`                    |
 | **production** | `AWS_PROFILE=korpobingo npx sst deploy --stage production` |
 
 Production deploys to `korpobingo.rosiak.it` with a custom domain and ACM certificate.
