@@ -28,3 +28,9 @@ sst-env.d.ts
 # misc
 .DS_Store
 *.pem
+
+# claude
+.claude/
+
+# storybook
+storybook-static/
