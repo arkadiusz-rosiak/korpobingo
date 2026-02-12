@@ -10,7 +10,7 @@ import WordList from "@/components/WordList";
 import { players as playersApi, rounds, words as wordsApi } from "@/lib/api";
 import { usePageTitle, usePolling } from "@/lib/hooks";
 import { useNotifications } from "@/lib/notifications";
-import { getPinForSession, getSession } from "@/lib/session";
+import { clearSession, getPinForSession, getSession } from "@/lib/session";
 import type { Player, Round, Word } from "@/lib/types";
 
 export default function RoundPage() {
@@ -39,19 +39,22 @@ export default function RoundPage() {
       .finally(() => setLoading(false));
   }, [code]);
 
-  // Redirect to join if no session
+  // Redirect to join if no session or PIN is missing
   useEffect(() => {
-    if (!loading && round && !session) {
+    if (!loading && round && (!session || !pin)) {
+      if (session && !pin) {
+        clearSession(code);
+      }
       router.push(`/round/${code}/join`);
     }
-  }, [loading, round, session, code, router]);
+  }, [loading, round, session, pin, code, router]);
 
   // Redirect to board if game is playing
   useEffect(() => {
-    if (round?.status === "playing" && session) {
+    if (round?.status === "playing" && session && pin) {
       router.push(`/round/${code}/board`);
     }
-  }, [round?.status, session, code, router]);
+  }, [round?.status, session, pin, code, router]);
 
   // Poll for words and players
   const fetchWords = useCallback(
@@ -157,7 +160,7 @@ export default function RoundPage() {
     );
   }
 
-  if (!session) return null; // Will redirect to join
+  if (!session || !pin) return null; // Will redirect to join
 
   const currentWords = wordList ?? [];
   const currentPlayers = playerList ?? [];

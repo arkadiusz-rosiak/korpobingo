@@ -63,12 +63,15 @@ export default function BoardPage() {
   const endingRef = useRef(false);
   const { toasts, dismissToast, notifyPlayerChanges } = useNotifications(playerName);
 
-  // Redirect if no session
+  // Redirect if no session or PIN is missing (e.g. lost after sessionStorage migration)
   useEffect(() => {
-    if (typeof window !== "undefined" && !session) {
+    if (typeof window !== "undefined" && (!session || !pin)) {
+      if (session && !pin) {
+        clearSession(code);
+      }
       router.push(`/round/${code}/join`);
     }
-  }, [session, code, router]);
+  }, [session, pin, code, router]);
 
   // Initial fetch
   useEffect(() => {
