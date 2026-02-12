@@ -40,11 +40,19 @@ export function clearSession(shareCode: string): void {
   clearPinForSession(shareCode);
 }
 
-// PIN stored in sessionStorage (cleared on tab close)
 function getPins(): Record<string, string> {
   if (typeof window === "undefined") return {};
   try {
-    const raw = sessionStorage.getItem(PIN_STORAGE_KEY);
+    // Migrate from sessionStorage to localStorage (one-time)
+    const legacy = sessionStorage.getItem(PIN_STORAGE_KEY);
+    if (legacy) {
+      const existing = localStorage.getItem(PIN_STORAGE_KEY);
+      if (!existing) {
+        localStorage.setItem(PIN_STORAGE_KEY, legacy);
+      }
+      sessionStorage.removeItem(PIN_STORAGE_KEY);
+    }
+    const raw = localStorage.getItem(PIN_STORAGE_KEY);
     return raw ? (JSON.parse(raw) as Record<string, string>) : {};
   } catch {
     return {};
@@ -53,7 +61,7 @@ function getPins(): Record<string, string> {
 
 function savePins(pins: Record<string, string>): void {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins));
+  localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins));
 }
 
 export function getPinForSession(shareCode: string): string | null {

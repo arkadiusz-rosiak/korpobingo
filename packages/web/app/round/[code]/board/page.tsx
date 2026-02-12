@@ -84,7 +84,6 @@ export default function BoardPage() {
           return;
         }
 
-
         // Try to get existing board or create one
         try {
           const b = await boards.get(r.roundId, playerName);
