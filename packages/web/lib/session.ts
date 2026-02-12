@@ -2,16 +2,34 @@
 
 interface PlayerSession {
   playerName: string;
+  pin?: string;
 }
 
 const STORAGE_KEY = "korpobingo_sessions";
-const PIN_STORAGE_KEY = "korpobingo_pins";
+const LEGACY_PIN_KEY = "korpobingo_pins";
 
 function getSessions(): Record<string, PlayerSession> {
   if (typeof window === "undefined") return {};
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, PlayerSession>) : {};
+    const sessions: Record<string, PlayerSession> = raw ? JSON.parse(raw) : {};
+
+    // One-time migration: merge pins from legacy separate storage
+    const legacyPinsRaw =
+      localStorage.getItem(LEGACY_PIN_KEY) || sessionStorage.getItem(LEGACY_PIN_KEY);
+    if (legacyPinsRaw) {
+      const legacyPins: Record<string, string> = JSON.parse(legacyPinsRaw);
+      for (const [code, pin] of Object.entries(legacyPins)) {
+        if (sessions[code] && !sessions[code].pin) {
+          sessions[code].pin = pin;
+        }
+      }
+      localStorage.removeItem(LEGACY_PIN_KEY);
+      sessionStorage.removeItem(LEGACY_PIN_KEY);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+    }
+
+    return sessions;
   } catch {
     return {};
   }
@@ -29,7 +47,8 @@ export function getSession(shareCode: string): PlayerSession | null {
 
 export function setSession(shareCode: string, playerName: string): void {
   const sessions = getSessions();
-  sessions[shareCode.toUpperCase()] = { playerName };
+  const existing = sessions[shareCode.toUpperCase()];
+  sessions[shareCode.toUpperCase()] = { playerName, pin: existing?.pin };
   saveSessions(sessions);
 }
 
@@ -37,46 +56,20 @@ export function clearSession(shareCode: string): void {
   const sessions = getSessions();
   delete sessions[shareCode.toUpperCase()];
   saveSessions(sessions);
-  clearPinForSession(shareCode);
-}
-
-function getPins(): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  try {
-    // Migrate from sessionStorage to localStorage (one-time)
-    const legacy = sessionStorage.getItem(PIN_STORAGE_KEY);
-    if (legacy) {
-      const existing = localStorage.getItem(PIN_STORAGE_KEY);
-      if (!existing) {
-        localStorage.setItem(PIN_STORAGE_KEY, legacy);
-      }
-      sessionStorage.removeItem(PIN_STORAGE_KEY);
-    }
-    const raw = localStorage.getItem(PIN_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
-  } catch {
-    return {};
-  }
-}
-
-function savePins(pins: Record<string, string>): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins));
 }
 
 export function getPinForSession(shareCode: string): string | null {
-  const pins = getPins();
-  return pins[shareCode.toUpperCase()] ?? null;
+  const sessions = getSessions();
+  return sessions[shareCode.toUpperCase()]?.pin ?? null;
 }
 
 export function setPinForSession(shareCode: string, pin: string): void {
-  const pins = getPins();
-  pins[shareCode.toUpperCase()] = pin;
-  savePins(pins);
-}
-
-function clearPinForSession(shareCode: string): void {
-  const pins = getPins();
-  delete pins[shareCode.toUpperCase()];
-  savePins(pins);
+  const sessions = getSessions();
+  const existing = sessions[shareCode.toUpperCase()];
+  if (existing) {
+    existing.pin = pin;
+  } else {
+    sessions[shareCode.toUpperCase()] = { playerName: "", pin };
+  }
+  saveSessions(sessions);
 }
