@@ -4,6 +4,7 @@ const tables = [roundsTable, wordsTable, playersTable, boardsTable];
 
 const functionTransform: sst.aws.ApiGatewayV2RouteArgs["transform"] = {
   function: {
+    runtime: "nodejs22.x",
     logging: {
       retention: "30 days",
     },
